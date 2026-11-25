@@ -101,6 +101,9 @@ body.closed .hero,body.closed nav,body.closed .foot{visibility:hidden}
 .sign small{display:block;color:#fff;font-size:.5em;font-style:normal;font-weight:700;margin-top:4px}
 .nst{position:absolute;left:50%;bottom:0;translate:-50% 0;width:min(100vw,760px);aspect-ratio:640/520;z-index:2}
 .nst svg{display:block;width:100%;height:100%;overflow:visible}.nst .bub{top:4%}
+#nightGuardVideo{display:none;position:absolute;z-index:4;left:50%;bottom:0;translate:-50% 0;width:min(100vw,760px);height:100%;object-fit:contain;mix-blend-mode:screen;background:transparent}
+#night.video-only .nst svg{display:none!important}
+#night.video-only #nightGuardVideo{display:block}
 .g{transition:transform 2.2s linear}.g:not(.tea){filter:brightness(.7)}
 .sleep .bob{transform-origin:0 -60px;transform:rotate(11deg);animation:snore 3.4s ease-in-out infinite}
 @keyframes snore{50%{transform:rotate(11deg) scale(1.03)}}
@@ -294,7 +297,7 @@ var A0=cl('big','nA'),K0=cl('kid','nK');
 function ex(sx){return '<g class="bm" style="--bx:'+(sx+8)+'px"><polygon points="0,-12 470,-130 470,120 0,12" fill="url(#nbm)" opacity=".85"/></g><rect class="tq" x="'+(sx-2)+'" y="-124" width="14" height="30" rx="4" fill="#222"/><text class="zz" x="30" y="-290">Z</text><text class="zz z2" x="54" y="-318">z</text><g class="gls" transform="translate(24,-212)"><path d="M-11-14h22l-3 30h-16z" fill="#e3e9f2"/><path d="M-9-6h18l-2 20h-14z" fill="#c9792b"/></g>'}
 var chair='<g fill="#3b3f55"><rect x="-52" y="-150" width="10" height="150"/><rect x="-46" y="-62" width="92" height="12"/><rect x="-40" y="-50" width="8" height="50"/><rect x="34" y="-50" width="8" height="50"/></g>';
 var tea='<g id="nT" class="g tea" data-s="1"><g class="wh"><circle cx="-62" cy="-36" r="34" fill="none" stroke="#9aa3b8" stroke-width="4"/><path d="M-62-70V-2M-96-36H-28" stroke="#9aa3b8" stroke-width="2"/></g><g class="wh"><circle cx="62" cy="-36" r="34" fill="none" stroke="#9aa3b8" stroke-width="4"/><path d="M62-70V-2M28-36H96" stroke="#9aa3b8" stroke-width="2"/></g><path d="M-62-36L-10-92H40L62-36M-10-92L10-36M-30-108H-8M-52-100L-62-36" stroke="#2c3248" stroke-width="5" fill="none"/><rect x="40" y="-152" width="46" height="60" rx="10" fill="#cfd6e2"/><rect x="44" y="-160" width="38" height="10" rx="4" fill="#9aa3b8"/><path class="stm" d="M40-120C10-118 0-90-4-62" stroke="#c9792b" stroke-width="4" fill="none"/><rect x="-14" y="-70" width="10" height="14" fill="#e8eef7"/><rect x="2" y="-70" width="10" height="14" fill="#e8eef7"/><path d="M-8-96L-26-46" stroke="#f4f1e6" stroke-width="16" stroke-linecap="round"/><rect x="-30" y="-176" width="34" height="62" rx="12" fill="#e9d9a8"/><path d="M-26-174Q-8-146 8-174" stroke="#c0392b" stroke-width="8" fill="none"/><path d="M-24-150L-54-110" stroke="#b9783f" stroke-width="9" stroke-linecap="round"/><circle class="bell" cx="-58" cy="-106" r="7" fill="#ffd21f"/><circle cx="-14" cy="-198" r="17" fill="#b9783f"/><path d="M-30-204Q-14-224 2-204Z" fill="#222"/><path d="M-26-192Q-14-185-2-192" stroke="#222" stroke-width="3" fill="none"/></g>';
-N.innerHTML='<div id="sh"><div class="sign">Closed for the night<small>Gate reopens at 5:30 AM IST</small></div></div><div class="nst"><div class="bub chat" id="nb" hidden><b class="tag"></b><span class="tx"></span></div><svg viewBox="0 0 640 520"><defs><linearGradient id="nbm" x1="0" x2="1"><stop offset="0" stop-color="#fff3a8"/><stop offset="1" stop-color="#fff3a8" stop-opacity="0"/></linearGradient></defs><g id="c1" transform="translate(150,495)">'+chair+'</g><g id="c2" transform="translate(490,495)">'+chair+'</g>'+tea+A0.outerHTML+K0.outerHTML+'</svg></div>';
+N.innerHTML='<div id="sh"><div class="sign">Closed for the night<small>Gate reopens at 5:30 AM IST</small></div></div><div class="nst"><div class="bub chat" id="nb" hidden><b class="tag"></b><span class="tx"></span></div><svg viewBox="0 0 640 520"><defs><linearGradient id="nbm" x1="0" x2="1"><stop offset="0" stop-color="#fff3a8"/><stop offset="1" stop-color="#fff3a8" stop-opacity="0"/></linearGradient></defs><g id="c1" transform="translate(150,495)">'+chair+'</g><g id="c2" transform="translate(490,495)">'+chair+'</g>'+tea+A0.outerHTML+K0.outerHTML+'</svg><video id=\"nightGuardVideo\" autoplay muted loop playsinline preload=\"auto\"><source src=\"security-night.webm\" type=\"video/webm\"></video></div>';
 document.body.appendChild(N);
 var nA=$('nA'),nK=$('nK'),nT=$('nT'),nb=$('nb');
 nA.insertAdjacentHTML('beforeend',ex(62));nK.insertAdjacentHTML('beforeend',ex(48));
@@ -316,6 +319,8 @@ function R(){var s=sod(),sc=scene(s),t=Date.now(),W=wake>t&&(sc==='rot'||sc==='p
  if($('clk'))$('clk').textContent=hm(s)+' IST';
  if(sc!==cur){trans(sc);cur=sc}
  if(sc==='open')return;
+ var videoOnly=(s>=76200);N.classList.toggle('video-only',videoOnly);
+ var nightVideo=$('nightGuardVideo');if(nightVideo){if(videoOnly){nightVideo.play().catch(function(){});}else{nightVideo.pause();}}
  N.classList.toggle('dawn',sc==='tea');
  var i=Math.floor(s/7),w=s%7<2.3,a={x:150,m:{}},k={x:490,d:-1,m:{}},tx=null,tw=null,T={x:900,m:{}},watch=s%45<4?'Hmm… '+hm(s)+'. Still a long night.':null;
  function pat(xs){return{x:xs[i%4],d:i%2?-1:1,m:{walk:w,fl:1}}}

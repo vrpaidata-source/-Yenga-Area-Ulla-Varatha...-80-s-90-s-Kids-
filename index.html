@@ -286,6 +286,8 @@ html.fitm .copy h1{font-size:1.75em}
 html.fitm .guards{width:auto;justify-self:end}
 html.fitm .stage{width:min(100%,230px);height:calc(var(--u)*13);aspect-ratio:7/6;overflow:hidden}
 </style>
+<!-- Supabase JS SDK (pinned version) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 (function(){var h=document.documentElement;
 function fit(){var b=document.body;if(!b)return;
@@ -444,10 +446,40 @@ F.up.addEventListener('submit',function(e){e.preventDefault();var d=v('up-dob');
  if($('up-pass').value.length<8)return fail(F.up,'Password needs at least 8 characters.','Password too short. Minimum eight characters.');
  if($('up-pass').value!==$('up-pass2').value)return fail(F.up,'Passwords don’t match.','Password mismatch detected. Please confirm again.');
  msg(F.up,'Welcome, 80’s/90’s kid! (Prototype only: no account created.)','ok');welcome()});
-F.in.addEventListener('submit',function(e){e.preventDefault();
- if(!v('in-id')||!$('in-pass').value)return fail(F.in,'Enter both fields, or the gate stays shut.','Login details incomplete. Gate stays locked.');
- if($('in-pass').value.length<6)return fail(F.in,'That password doesn’t look right.','Access denied. Password check failed. Try again.');
- msg(F.in,'Gate opens! (Prototype only: no real sign-in.)','ok');welcome()});
+
+/* ===== REAL SUPABASE SIGN-IN ===== */
+var SUPABASE_URL='https://YOUR-PROJECT-REF.supabase.co',   /* <-- paste your Project URL */
+    SUPABASE_ANON_KEY='YOUR-ANON-PUBLIC-KEY',              /* <-- paste your anon/public key (NEVER the service-role key) */
+    AUTH_REDIRECT='dashboard.html';                        /* <-- your page shown after login */
+var sb=null;
+try{if(window.supabase&&!/YOUR-/.test(SUPABASE_URL+SUPABASE_ANON_KEY))
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)}catch(x){}
+var signing=false;
+F.in.addEventListener('submit',async function(e){
+ e.preventDefault();if(signing)return;
+ var id=v('in-id'),pw=$('in-pass').value;
+ if(!id||!pw)return fail(F.in,'Enter both fields, or the gate stays shut.','Login details incomplete. Gate stays locked.');
+ if(!em.test(id))return fail(F.in,'Enter the email address you signed up with.','Email address invalid. Check and retry.');
+ if(!sb)return fail(F.in,'Sign-in is not configured yet.','Gate system offline. Supabase keys missing.');
+ var btn=F.in.querySelector('.btn'),old=btn.innerHTML;
+ signing=true;btn.disabled=true;btn.textContent='Signing in…';msg(F.in,'Checking with the guards…','ok');
+ try{
+  var r=await sb.auth.signInWithPassword({email:id,password:pw});
+  if(r.error)throw r.error;
+  msg(F.in,'Gate opens! Redirecting…','ok');welcome();
+  setTimeout(function(){location.href=AUTH_REDIRECT},1200);
+ }catch(err){
+  var m=String(err&&err.message||''),t;
+  if(/invalid login/i.test(m))t='Wrong email or password.';
+  else if(/not confirmed/i.test(m))t='Please confirm your email first.';
+  else if(/rate|too many|429/i.test(m)||(err&&err.status===429))t='Too many attempts. Wait a bit and retry.';
+  else if(/fetch|network/i.test(m))t='Network problem. Check your connection.';
+  else t=m||'Sign-in failed. Please try again.';
+  signing=false;btn.disabled=false;btn.innerHTML=old;
+  fail(F.in,t,'Access denied. '+t);
+ }
+});
+
 F.forgot.addEventListener('submit',function(e){e.preventDefault();
  if(!em.test(v('fg-email')))return fail(F.forgot,'Enter a valid email address.','Email address invalid. Cannot send reset link.');
  msg(F.forgot,'Reset link “sent”. (Prototype only: nothing emailed.)','ok');radio('Reset link dispatched to your inbox. Prototype mode, nothing was really sent.')});

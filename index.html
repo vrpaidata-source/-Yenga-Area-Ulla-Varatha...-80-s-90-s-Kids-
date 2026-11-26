@@ -462,7 +462,7 @@ F.forgot.addEventListener('submit',async function(e){e.preventDefault();
 var nb=document.getElementById('netBanner');function net(){nb.classList.toggle('on',!navigator.onLine)}window.addEventListener('online',net);window.addEventListener('offline',net);net();
 var DEBUG=true; /* set false to remove the preview picker in production */
 var $=function(i){return document.getElementById(i)},body=document.body,off=0,cur=null,wake=0,wx=.5,timer,last=0,
-SC={open:19800,close:75599,back:75605,rot:84600,tea:16200};
+SC={open:19800,close:86400,back:86400,rot:86400,tea:16200}; /* TEMP: 9 PM closing disabled; restore original values when development is complete */
 function real(){var o={};new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'}).formatToParts(new Date()).forEach(function(p){o[p.type]=+p.value});return o.hour*3600+o.minute*60+o.second}
 function sod(){return(real()+off+86400)%86400}
 function setClock(h){var a=h.split(':').map(Number);off=a[0]*3600+a[1]*60+(a[2]||0)-real()}

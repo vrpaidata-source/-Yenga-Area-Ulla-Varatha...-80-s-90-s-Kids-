@@ -438,19 +438,28 @@ function v(i){return $(i).value.trim()}
 var em=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function dobBad(d){return d<'1980-01-01'||d>'1999-12-31'}
 $('up-dob').addEventListener('input',function(){var d=this.value;if(d.length===10&&dobBad(d)){msg(F.up,'Sorry da! Only people born 1980 to 1999 get past the guards.','err');cuffs(d.slice(0,4))}});
-F.up.addEventListener('submit',function(e){e.preventDefault();var d=v('up-dob');
- if(!v('up-name')||!em.test(v('up-email')))return fail(F.up,'Enter your name and a valid email.','Name or email is missing at the gate. Requesting a retry.');
- if(!/^\+?[0-9 ]{7,15}$/.test(v('up-mob')))return fail(F.up,'Enter a valid mobile number.','Mobile number looks invalid. Requesting a retry.');
- if(!d)return fail(F.up,'Date of birth please. The guards need to check!','Date of birth missing. Guards need to verify the year.');
+F.up.addEventListener('submit',async function(e){e.preventDefault();var d=v('up-dob');
+ if(!v('up-name')||!em.test(v('up-email')))return fail(F.up,'Enter your name and a valid email.','Name or email is missing.');
+ if(!/^\\+?[0-9 ]{7,15}$/.test(v('up-mob')))return fail(F.up,'Enter a valid mobile number.','Mobile number looks invalid.');
+ if(!d)return fail(F.up,'Date of birth please. The guards need to check!','Date of birth missing.');
  if(dobBad(d)){msg(F.up,'Sorry da! Only people born 1980 to 1999 get past the guards.','err');return cuffs(d.slice(0,4))}
  if($('up-pass').value.length<8)return fail(F.up,'Password needs at least 8 characters.','Password too short. Minimum eight characters.');
- if($('up-pass').value!==$('up-pass2').value)return fail(F.up,'Passwords don’t match.','Password mismatch detected. Please confirm again.');
- msg(F.up,'Welcome, 80’s/90’s kid! (Prototype only: no account created.)','ok');welcome()});
+ if($('up-pass').value!==$('up-pass2').value)return fail(F.up,'Passwords don’t match.','Password mismatch detected.');
+ if(!sb)return fail(F.up,'Account system is not configured yet.','Supabase setup missing.');
+ var btn=F.up.querySelector('.btn'),old=btn.innerHTML;btn.disabled=true;btn.textContent='Creating account…';
+ try{
+  var r=await sb.auth.signUp({email:v('up-email'),password:$('up-pass').value,options:{data:{full_name:v('up-name'),mobile:v('up-mob'),date_of_birth:d}}});
+  if(r.error)throw r.error;
+  msg(F.up,r.data.session?'Account created!':'Account created. Check your email to confirm it.','ok');
+  if(r.data.session)welcome();
+ }catch(err){msg(F.up,err.message||'Sign-up failed. Please try again.','err')}
+ finally{btn.disabled=false;btn.innerHTML=old}
+});
 
 /* ===== REAL SUPABASE SIGN-IN ===== */
-var SUPABASE_URL='https://YOUR-PROJECT-REF.supabase.co',   /* <-- paste your Project URL */
-    SUPABASE_ANON_KEY='YOUR-ANON-PUBLIC-KEY',              /* <-- paste your anon/public key (NEVER the service-role key) */
-    AUTH_REDIRECT='dashboard.html';                        /* <-- your page shown after login */
+var SUPABASE_URL='https://geinocdanrtpjbscfxhn.supabase.co',
+    SUPABASE_ANON_KEY='sb_publishable_uc09IiXZhBQD6TLKdHRVdg_GyT7yDN8',
+    AUTH_REDIRECT='dashboard.html';
 var sb=null;
 try{if(window.supabase&&!/YOUR-/.test(SUPABASE_URL+SUPABASE_ANON_KEY))
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)}catch(x){}
@@ -480,9 +489,13 @@ F.in.addEventListener('submit',async function(e){
  }
 });
 
-F.forgot.addEventListener('submit',function(e){e.preventDefault();
- if(!em.test(v('fg-email')))return fail(F.forgot,'Enter a valid email address.','Email address invalid. Cannot send reset link.');
- msg(F.forgot,'Reset link “sent”. (Prototype only: nothing emailed.)','ok');radio('Reset link dispatched to your inbox. Prototype mode, nothing was really sent.')});
+F.forgot.addEventListener('submit',async function(e){e.preventDefault();
+ if(!em.test(v('fg-email')))return fail(F.forgot,'Enter a valid email address.','Email address invalid.');
+ if(!sb)return fail(F.forgot,'Password reset is not configured.','Supabase setup missing.');
+ try{var r=await sb.auth.resetPasswordForEmail(v('fg-email'));if(r.error)throw r.error;
+ msg(F.forgot,'Password reset email sent. Check your inbox.','ok');
+ }catch(err){msg(F.forgot,err.message||'Could not send reset email.','err')}
+});
 })();
 </script>
 <script>

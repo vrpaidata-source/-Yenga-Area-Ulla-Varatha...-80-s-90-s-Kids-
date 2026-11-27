@@ -290,7 +290,7 @@ body:has(#f-up.on) .btn{height:56px;font-size:1.2rem;margin-top:18px}
 body:has(#f-up.on) .row{font-size:.95rem;margin-top:14px}
 body:has(#f-up.on) .msg{font-size:.92rem;min-height:1.3em}
 body:has(#f-up.on) .tick{font-size:.88rem}
-</style>
+#ts-box:empty{display:none}</style>
 
 <!-- Supabase JS SDK: main CDN + 2 fallbacks (unpkg, then local supabase.js) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -360,7 +360,7 @@ addEventListener('resize',fit);addEventListener('orientationchange',fit)})();
 <button role="tab" id="t-up" aria-selected="false" data-go="up">Sign Up</button>
 <button role="tab" id="t-in" aria-selected="true" data-go="in">Sign In</button>
 </div>
-
+<div id="ts-box"></div>
 <form id="f-up" novalidate>
 <button type="button" class="back" data-go="in">← Back to Sign In</button>
 <h2>Create Your Account</h2>
@@ -373,7 +373,6 @@ addEventListener('resize',fit);addEventListener('orientationchange',fit)})();
 <div class="pw-bar" id="pwBar" aria-hidden="true"><i></i></div>
 <div class="f"><svg class="i"><use href="#lock"/></svg><input id="up-pass2" type="password" autocomplete="new-password" placeholder="Confirm Password" aria-label="Confirm password"><button type="button" class="eye" aria-label="Show password"><svg class="i"><use href="#eye"/></svg></button></div>
 <label class="tick"><input type="checkbox" id="up-terms"><span>I am born 1980–1999, my details are true, and I accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> &amp; <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
-<div id="ts-box"></div>
 <button class="btn" type="submit"><svg class="i"><use href="#add"/></svg>Sign Up</button>
 <p class="msg" aria-live="polite"></p>
 <div class="row">Already have an account? <button type="button" class="link" data-go="in">Sign In</button></div>
@@ -468,7 +467,8 @@ async function claimDeviceLock(){var r=await sb.rpc('claim_device_lock',{p_devic
 
 $('up-dob').addEventListener('input',function(){var d=this.value;if(d.length===10&&dobBad(d)){msg(F.up,'Sorry da! Only people born 1980 to 1999 get past the guards.','err');cuffs(d.slice(0,4))}});
 /* Cloudflare Turnstile: paste your SITE key below. Empty = check skipped. */
-var TS_KEY='',tsToken='',tsId=null;
+var TS_KEY='0x4AAAAAAGVs25dPw_NjOuxG',tsToken='',tsId=null;
+function tsReset(){tsToken='';if(window.turnstile&&tsId!==null){try{turnstile.reset(tsId)}catch(_){}}}
 if(TS_KEY){window.onTsLoad=function(){tsId=turnstile.render('#ts-box',{sitekey:TS_KEY,appearance:'interaction-only',callback:function(t){tsToken=t},'expired-callback':function(){tsToken=''},'error-callback':function(){tsToken=''}})};
 var tsS=document.createElement('script');tsS.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTsLoad';tsS.async=true;document.head.appendChild(tsS)}
 F.up.addEventListener('submit',async function(e){e.preventDefault();var d=v('up-dob');
@@ -509,15 +509,16 @@ F.in.addEventListener('submit',async function(e){
  if(!id||!pw)return fail(F.in,'Enter both fields, or the gate stays shut.','Login details incomplete. Gate stays locked.');
  if(!em.test(id))return fail(F.in,'Enter the email address you signed up with.','Email address invalid. Check and retry.');
  if(!initSb())return fail(F.in,LIB_ERR,'Gate system offline. Sign in library failed to load. Refresh the page.');
+ if(TS_KEY&&!tsToken)return fail(F.in,'Please complete the quick human check.','Human check not finished.');
  var btn=F.in.querySelector('.btn'),old=btn.innerHTML;
  signing=true;btn.disabled=true;btn.textContent='Signing in…';msg(F.in,'Checking with the guards…','ok');
  try{
-  var r=await sb.auth.signInWithPassword({email:id,password:pw});
+  var r=await sb.auth.signInWithPassword({email:id,password:pw,options:{captchaToken:tsToken||undefined}});
   if(r.error)throw r.error;
   try{await claimDeviceLock()}catch(lockErr){await sb.auth.signOut();throw lockErr}
   msg(F.in,'Gate opens! Welcome machi…','ok');
   await playWelcomeVideo();
- }catch(err){
+ }catch(err){tsReset();
   var m=String(err&&err.message||''),t;
   if(/invalid login/i.test(m))t='Wrong email or password.';
   else if(/not confirmed/i.test(m))t='Please confirm your email first.';
@@ -533,7 +534,8 @@ F.in.addEventListener('submit',async function(e){
 F.forgot.addEventListener('submit',async function(e){e.preventDefault();
  if(!em.test(v('fg-email')))return fail(F.forgot,'Enter a valid email address.','Email address invalid.');
  if(!initSb())return fail(F.forgot,LIB_ERR,'Sign in library failed to load. Refresh the page.');
- try{var r=await sb.auth.resetPasswordForEmail(v('fg-email'),{redirectTo:new URL('reset-password.html',location.href).href});if(r.error)throw r.error;
+ if(TS_KEY&&!tsToken)return fail(F.forgot,'Please complete the quick human check.','Human check not finished.');
+ try{var r=await sb.auth.resetPasswordForEmail(v('fg-email'),{redirectTo:new URL('reset-password.html',location.href).href,captchaToken:tsToken||undefined});tsReset();if(r.error)throw r.error;
  msg(F.forgot,'Password reset email sent. Check your inbox.','ok');
  }catch(err){msg(F.forgot,/fetch|network/i.test(String(err.message))?'இணைய இணைப்பைச் சரிபார்க்கவும்.':'Reset link அனுப்ப முடியவில்லை. மீண்டும் முயற்சிக்கவும்.','err')}
 });

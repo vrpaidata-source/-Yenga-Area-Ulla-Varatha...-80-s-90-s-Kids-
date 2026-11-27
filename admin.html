@@ -25,7 +25,7 @@ img.pv{display:block;max-width:100%;max-height:300px;border-radius:12px;margin-t
 <body><header><b>🛡️ Yenga Area Admin</b><button id="out" class="hidden">Sign out</button></header>
 <main>
 <p id="msg" role="status" aria-live="polite"></p>
-<section id="vLogin" class="card hidden"><h1>Admin sign in</h1><form id="fLogin"><input id="em" type="email" autocomplete="username" placeholder="Email" aria-label="Email"><input id="pw" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password"><button style="width:100%;margin-top:8px">Sign in</button></form></section>
+<section id="vLogin" class="card hidden"><h1>Admin sign in</h1><form id="fLogin"><input id="em" type="email" autocomplete="username" placeholder="Email" aria-label="Email"><input id="pw" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password"><div id="ts"></div><button style="width:100%;margin-top:8px">Sign in</button></form></section>
 <section id="vEnroll" class="card hidden center"><h1>Set up 2-step verification</h1><p class="small">Authenticator app-ல் (Google Authenticator / Authy) இந்த QR scan பண்ணுங்க.</p><img id="qr" class="qr" alt="QR code"><p class="small">Scan ஆகலைன்னா key: <code id="sec"></code></p><input id="enCode" inputmode="numeric" maxlength="6" placeholder="6-digit code" aria-label="6 digit code"><button id="enGo" style="width:100%">Verify &amp; continue</button></section>
 <section id="vMfa" class="card hidden center"><h1>2-step verification</h1><p class="small">Authenticator app-ல் உள்ள 6-digit code போடுங்க.</p><input id="mfCode" inputmode="numeric" maxlength="6" placeholder="6-digit code" aria-label="6 digit code"><button id="mfGo" style="width:100%">Verify</button></section>
 <section id="vApp" class="hidden">
@@ -55,7 +55,7 @@ async function verify(box,input){const fid=$(box).dataset.f,code=$(input).value.
   const c=await sb.auth.mfa.challenge({factorId:fid});if(c.error)return say(c.error.message);
   const v=await sb.auth.mfa.verify({factorId:fid,challengeId:c.data.id,code});if(v.error)return say('Code தவறு. மீண்டும் முயற்சிக்கவும்.');$(input).value='';gate()}
 $('enGo').onclick=()=>verify('vEnroll','enCode');$('mfGo').onclick=()=>verify('vMfa','mfCode');
-$('fLogin').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;const r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});b.disabled=false;if(r.error)return say('Email / password தவறு.');$('pw').value='';gate()};
+$('fLogin').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;if(TS_KEY&&!tsTok){b.disabled=false;return say('Human check முடிக்கவும்.')}const r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value,options:{captchaToken:tsTok||undefined}});tsTok='';if(window.turnstile&&tsId!==null){try{turnstile.reset(tsId)}catch(_){}}b.disabled=false;if(r.error)return say('Email / password தவறு.');$('pw').value='';gate()};
 $('out').onclick=async()=>{await sb.auth.signOut();view('vLogin')};
 document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.t;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));load()};
 const ago=d=>new Date(d).toLocaleString();
@@ -81,6 +81,9 @@ $('list').onclick=async e=>{const b=e.target.closest('button[data-k]');if(!b)ret
   const d=w.dataset,args={p_kind:k,p_report:d.r||null,p_user:d.u||null,p_post:d.p||null,p_days:7};
   const ask={ban:'இந்த user-ஐ permanent ban பண்ணவா?',remove:'Post-ஐ நிரந்தரமா remove பண்ணவா?',suspend:'7 நாள் suspend பண்ணவா?'}[k];
   await act(args,ask);if(tab==='users')users()};
+/* Cloudflare Turnstile SITE key (same one as index.html). Empty = skipped. */
+var TS_KEY='0x4AAAAAAGVs25dPw_NjOuxG';var tsTok='',tsId=null;
+if(TS_KEY){window.onTs=function(){tsId=turnstile.render('#ts',{sitekey:TS_KEY,appearance:'interaction-only',callback:function(t){tsTok=t},'expired-callback':function(){tsTok=''},'error-callback':function(){tsTok=''}})};var s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTs';s.async=true;document.head.appendChild(s)}
 gate();
 })();
 </script></body></html>

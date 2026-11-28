@@ -379,4 +379,209 @@ window.alert=function(t){
 const w=setInterval(()=>{const a=$('app');if(!window.__sb||!a||a.classList.contains('hidden'))return;clearInterval(w);check()},500);
 })();
 </script>
+<script>
+/* ===== PHASE 7 PART A: header, follow btn, 3-dot menu, create sheet, My space, search follow, school/degree ===== */
+(()=>{
+const $=i=>document.getElementById(i);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DEG=['SSLC / 10th','HSC / 12th','ITI','Diploma','B.E. / B.Tech','B.Sc','B.Com','B.A','BBA','BCA','B.Pharm','B.Ed','MBBS / BDS','M.E. / M.Tech','M.Sc','M.Com','M.A','MBA','MCA','Ph.D','Studying / இன்னும் படிக்கிறேன்','Other'];
+let YEARS='';for(let y=2026;y>=1985;y--)YEARS+='<option value="'+y+'">'+y+'</option>';
+let sb,me,eduErr=false;const edu={};let follows=null;
+
+const css=document.createElement('style');
+css.textContent=`
+header{transition:transform .3s ease}header.hhide{transform:translateY(-115%)}
+.brand{min-width:0}.brand>div{min-width:0;line-height:1.15}.brand #hdName{display:block;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50vw}.brand .avatar{flex:none}
+.post{position:relative}
+.namerow{display:flex;align-items:center;gap:8px;min-width:0}
+.fbtn{margin:0!important;padding:3px 12px!important;font-size:.78rem!important;border-radius:999px!important;flex:none;background:var(--gold)!important;color:var(--ink)!important;box-shadow:none!important}
+.edu{font-size:.78rem;color:var(--teal);font-weight:600;line-height:1.3;overflow-wrap:anywhere}.edu:empty{display:none}
+.dots{margin-left:auto;border:0;background:none;width:40px;height:40px;border-radius:50%;font-size:1.5rem;line-height:1;color:var(--muted);flex:none}.dots:hover{background:var(--mint)}
+.dmenu{position:absolute;top:54px;right:12px;z-index:25;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:6px;min-width:178px}
+.dmenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:11px 12px;border-radius:10px;font-weight:600}.dmenu button:hover{background:var(--mint)}
+.act[data-a="more"]{display:none}
+.cmpbd{position:fixed;inset:0;background:rgba(7,32,33,.55);backdrop-filter:blur(4px);z-index:74;display:none}.cmpbd.show{display:block}
+.cmp{display:none}
+.cmp.open{display:block;position:fixed;left:0;right:0;bottom:0;margin:0;z-index:75;border-radius:28px 28px 0 0;max-height:88dvh;overflow:auto;padding:14px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@media(min-width:760px){.cmp.open{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:min(560px,92vw);border-radius:28px;animation:none}}
+.cmphead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.cmphead b{font-family:var(--disp);font-size:1.2rem;color:var(--ink)}
+.cmp .composer{align-items:flex-start}.cmp #postBody{min-height:56px}
+.cmp label.photo{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;margin:0}
+.cmpact{display:flex;gap:10px;align-items:center;margin-top:12px}
+.attach{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:1.5px dashed var(--teal);background:#f6faf9;border-radius:14px;padding:10px 12px;font-weight:600;color:var(--ink);text-align:left}
+.attach span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.attach.has{background:var(--mint);border-style:solid}
+.cmpact .btn{flex:none;padding:12px 22px}
+.sfb{margin-left:auto;flex:none;border:0;border-radius:999px;padding:8px 16px;font-weight:700;background:var(--gold);color:var(--ink)}.sfb.on{background:var(--mint);color:var(--ink)}
+.eg{border:1.5px solid var(--line);border-radius:18px;padding:12px;display:grid;gap:10px;background:#f6faf9}.eg>b{font-family:var(--disp);color:var(--ink)}
+.sug{display:grid;gap:4px;margin-top:-6px}.sg{border:0;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-weight:600}.sg.new{border-style:dashed;color:var(--teal)}
+.eg select,#eBox select{width:100%;border:1.5px solid var(--line);background:#f6faf9;border-radius:14px;padding:12px 14px;font-size:16px}
+#eOv{position:fixed;inset:0;z-index:99997;background:rgba(6,37,38,.88);display:grid;place-items:center;padding:16px;overflow:auto}
+#eBox{width:100%;max-width:420px;background:#fff;border-radius:24px;padding:20px 18px;box-shadow:0 20px 50px rgba(0,0,0,.45);display:grid;gap:10px}
+#eBox h2{margin:0;font-family:var(--disp);color:var(--ink);font-size:1.3rem}#eBox p{margin:0;color:var(--muted);font-size:.92rem}
+#eBox label{font-weight:600;font-size:.92rem;display:grid;gap:5px}
+.myspace .tilelist{margin-top:6px}
+`;
+document.head.appendChild(css);
+
+/* ---------- 1) HEADER: my photo + my name + tagline; hides on scroll ---------- */
+function header(){
+  const brand=document.querySelector('.brand'),av=$('openProfile');
+  if(brand&&av&&!$('hdName')){brand.innerHTML='';brand.appendChild(av);const d=document.createElement('div');d.innerHTML='<span id="hdName"></span><small>இது நம்ம ஏரியா., நம்ம இடம்</small>';brand.appendChild(d)}
+  refreshName();
+  let ly=scrollY;const h=document.querySelector('header');
+  addEventListener('scroll',()=>{const y=scrollY;if(y>90&&y>ly+4)h.classList.add('hhide');else if(y<ly-4||y<90)h.classList.remove('hhide');ly=y},{passive:true});
+}
+async function refreshName(){
+  const r=await sb.from('profiles').select('username').eq('id',me.id).maybeSingle();
+  const n=r.data?.username||me.user_metadata?.full_name||(me.email||'Member').split('@')[0];
+  const e=$('hdName');if(e)e.textContent=n}
+document.addEventListener('click',e=>{if(e.target.closest('#saveProfile'))setTimeout(refreshName,1500)});
+
+/* ---------- 2) CREATE: composer opens only when Create is tapped ---------- */
+let bd;
+function composer(){
+  const pb=$('postBody');if(!pb)return;const card=pb.closest('.card');card.classList.add('cmp');
+  const comp=card.querySelector('.composer');
+  const head=document.createElement('div');head.className='cmphead';head.innerHTML='<b>புது post ✨</b><button type="button" class="close" id="cmpX" aria-label="Close">×</button>';card.insertBefore(head,card.firstChild);
+  const row=document.createElement('div');row.className='cmpact';
+  row.innerHTML='<button type="button" class="attach" id="cmpAtt" aria-label="Add photo, video or audio">📎 <span id="cmpFn">Photo / Video / Audio</span></button>';
+  row.appendChild($('createPost'));comp.insertAdjacentElement('afterend',row);
+  bd=document.createElement('div');bd.className='cmpbd';document.body.appendChild(bd);
+  const pf=$('postFile');
+  $('cmpAtt').onclick=()=>pf.click();
+  const chip=()=>{const f=pf.files[0],b=$('cmpAtt');$('cmpFn').textContent=f?f.name:'Photo / Video / Audio';b.classList.toggle('has',!!f)};
+  pf.addEventListener('change',chip);
+  $('cmpX').onclick=bd.onclick=closeCmp;
+  const st=$('status');
+  if(st)new MutationObserver(()=>{if(st.textContent==='Posted!')setTimeout(()=>{closeCmp();chip()},700)}).observe(st,{childList:true,characterData:true,subtree:true});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCmp()});
+}
+function openCmp(){const c=$('postBody').closest('.card');c.classList.add('open');bd.classList.add('show');setTimeout(()=>$('postBody').focus(),150)}
+function closeCmp(){const c=$('postBody').closest('.card');c.classList.remove('open');bd.classList.remove('show')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-section="create"]');if(b){e.stopImmediatePropagation();e.preventDefault();openCmp()}},true);
+
+/* ---------- 3) MY SPACE moves into the edit-profile sheet ---------- */
+function moveSpace(){
+  const t=$('tileProfile'),pp=$('profilePanel');if(!t||!pp)return;
+  const card=t.closest('.card'),grid=card.querySelector('.tilelist'),box=pp.querySelector('.box');
+  const w=document.createElement('div');w.className='myspace';w.innerHTML='<h2 class="sectitle">My space</h2>';w.appendChild(grid);box.appendChild(w);
+  t.classList.add('hidden');card.classList.add('hidden');
+}
+
+/* ---------- 4) FEED: follow beside name, school line, 3-dot menu ---------- */
+async function loadEdu(ids){
+  const need=ids.filter(u=>u&&!(u in edu));if(!need.length)return true;
+  const r=await sb.from('profiles').select('id,edu_school_id,edu_year,edu_degree').in('id',need);
+  if(r.error){eduErr=true;need.forEach(u=>edu[u]=null);return false}
+  const sids=[...new Set((r.data||[]).map(x=>x.edu_school_id).filter(Boolean))],sn={};
+  if(sids.length){const s=await sb.from('yau_schools').select('id,name').in('id',sids);(s.data||[]).forEach(x=>sn[x.id]=x.name)}
+  need.forEach(u=>edu[u]=null);
+  (r.data||[]).forEach(x=>edu[x.id]={school:sn[x.edu_school_id]||'',year:x.edu_year,degree:x.edu_degree});
+  return true}
+function eduHTML(e){if(!e||(!e.school&&!e.year&&!e.degree))return'';return '🎓 '+[e.degree,e.school,e.year].filter(Boolean).map(esc).join(' · ')}
+function paintEdu(){document.querySelectorAll('.edu[data-u]').forEach(el=>{el.innerHTML=eduHTML(edu[el.dataset.u])})}
+let ft;
+async function fixFeed(){
+  const arts=[...$('feed').querySelectorAll('article.post:not([data-p7])')];if(!arts.length)return;
+  const uids=[];
+  arts.forEach(a=>{a.dataset.p7=1;
+    const head=a.querySelector('.posthead'),meta=head&&head.querySelector('.meta'),nm=meta&&meta.querySelector('b'),fb=a.querySelector('.followpost');if(!meta||!nm)return;
+    const uid=fb?fb.dataset.user:a.dataset.uid;if(uid){a.dataset.uid=uid;uids.push(uid)}
+    const row=document.createElement('div');row.className='namerow';meta.insertBefore(row,nm);row.appendChild(nm);
+    if(fb){row.appendChild(fb);fb.classList.add('fbtn');
+      if(/Following/.test(fb.textContent)||fb.disabled)fb.classList.add('hidden');
+      fb.addEventListener('click',()=>setTimeout(()=>fb.classList.add('hidden'),600))}
+    const pa=a.querySelector('.postactions');if(pa)pa.classList.add('hidden');
+    const ed=document.createElement('div');ed.className='edu';ed.dataset.u=uid||'';row.insertAdjacentElement('afterend',ed);
+    const mine=!!a.querySelector('.del');a.querySelectorAll('.edit,.del').forEach(b=>b.classList.add('hidden'));
+    const d=document.createElement('button');d.type='button';d.className='dots';d.setAttribute('aria-label','More');d.textContent='⋮';d.dataset.mine=mine?'1':'';head.appendChild(d)});
+  await loadEdu(uids);paintEdu();
+}
+new MutationObserver(()=>{clearTimeout(ft);ft=setTimeout(fixFeed,30)});
+function feedObs(){new MutationObserver(()=>{clearTimeout(ft);ft=setTimeout(fixFeed,30)}).observe($('feed'),{childList:true});fixFeed()}
+const closeMenus=()=>document.querySelectorAll('.dmenu').forEach(m=>m.remove());
+document.addEventListener('click',e=>{
+  const d=e.target.closest('.dots');
+  if(!d){if(!e.target.closest('.dmenu'))closeMenus();return}
+  const a=d.closest('.post'),had=a.querySelector('.dmenu');closeMenus();if(had)return;
+  const m=document.createElement('div');m.className='dmenu';
+  m.innerHTML=d.dataset.mine?'<button data-m="edit">✏️ Edit</button><button data-m="del">🗑️ Delete</button>':'<button data-m="rep">⚠️ Report / Block</button>';
+  a.appendChild(m);
+  m.onclick=ev=>{const b=ev.target.closest('button');if(!b)return;m.remove();const k=b.dataset.m;
+    if(k==='edit')a.querySelector('.edit')?.click();else if(k==='del')a.querySelector('.del')?.click();else if(k==='rep')a.querySelector('.act[data-a="more"]')?.click()}
+});
+
+/* ---------- 5) SEARCH: people list with Follow / Following buttons ---------- */
+async function loadFollows(){const r=await sb.from('follows').select('following_id').eq('follower_id',me.id);follows=new Set((r.data||[]).map(x=>x.following_id))}
+const fbtn=id=>'<button type="button" class="sfb'+(follows.has(id)?' on':'')+'" data-id="'+id+'">'+(follows.has(id)?'Following ✓':'Follow')+'</button>';
+let st2,busy=false;
+async function searchFix(){
+  const R=$('gRes'),P=$('searchPanel');if(!R||!P.classList.contains('show')||busy)return;busy=true;
+  try{
+    if(!follows)await loadFollows();
+    const empty=!$('gSearch').value.trim();
+    if(empty&&!R.querySelector('.prow')){
+      const[pp,bl]=await Promise.all([sb.from('profiles').select('id,username,area,avatar_url').neq('id',me.id).limit(30),sb.from('blocks').select('blocked_id').eq('blocker_id',me.id)]);
+      const blk=new Set((bl.data||[]).map(x=>x.blocked_id)),list=(pp.data||[]).filter(x=>!blk.has(x.id));
+      const hs=list.length?await sb.from('user_settings').select('user_id,hide_area').in('user_id',list.map(x=>x.id)):{data:[]};
+      const hide=new Set((hs.data||[]).filter(x=>x.hide_area).map(x=>x.user_id));
+      R.innerHTML='<h2 class="sectitle">நம்ம ஏரியா மக்கள்</h2>'+(list.map(x=>'<div class="feeditem prow" data-uid="'+x.id+'" data-fb="1"><div class="avatar sm">'+(x.avatar_url?'<img src="'+esc(x.avatar_url)+'" alt="">':esc((x.username||'Y')[0].toUpperCase()))+'</div><div><b>'+esc(x.username||'Member')+'</b><div class="small">'+(hide.has(x.id)?'':esc(x.area||''))+'</div></div>'+fbtn(x.id)+'</div>').join('')||'<div class="empty">யாருமில்லை</div>');
+    }else{
+      R.querySelectorAll('.prow:not([data-fb])').forEach(r=>{r.dataset.fb=1;if(r.dataset.uid&&r.dataset.uid!==me.id)r.insertAdjacentHTML('beforeend',fbtn(r.dataset.uid))});
+    }
+  }catch(_){}finally{busy=false}
+}
+function searchObs(){
+  const R=$('gRes');if(!R)return;
+  new MutationObserver(()=>{clearTimeout(st2);st2=setTimeout(searchFix,80)}).observe(R,{childList:true});
+  R.addEventListener('click',async e=>{const b=e.target.closest('.sfb');if(!b)return;e.stopPropagation();
+    const id=b.dataset.id,on=b.classList.contains('on');b.disabled=true;
+    const r=on?await sb.from('follows').delete().eq('follower_id',me.id).eq('following_id',id):await sb.from('follows').insert({follower_id:me.id,following_id:id});
+    b.disabled=false;if(r.error){alert(r.error.message);return}
+    if(on)follows.delete(id);else{follows.add(id);sb.from('notifications').insert({user_id:id,actor_id:me.id,kind:'follow',content:'started following you'})}
+    b.classList.toggle('on',!on);b.textContent=on?'Follow':'Following ✓'});
+}
+
+/* ---------- 6) SCHOOL / YEAR / DEGREE: edit-profile fields + forced prompt ---------- */
+function eduFields(p){return '<label>School<input id="'+p+'School" autocomplete="off" maxlength="80" placeholder="School peyar type pannunga…"></label><div class="sug" id="'+p+'Sug"></div><label>School year (padicha / mudicha year)<select id="'+p+'Year"><option value="">Year</option>'+YEARS+'</select></label><label>Degree<select id="'+p+'Deg"><option value="">Degree</option>'+DEG.map(d=>'<option>'+esc(d)+'</option>').join('')+'</select></label>'}
+function wireEdu(p,init){
+  const inp=$(p+'School'),sug=$(p+'Sug');let t;
+  if(init){inp.value=init.school||'';$(p+'Year').value=init.year||'';$(p+'Deg').value=init.degree||''}
+  inp.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(async()=>{
+    const q=inp.value.trim().replace(/[%_,()\\]/g,' ').trim();if(q.length<2){sug.innerHTML='';return}
+    const r=await sb.from('yau_schools').select('id,name').ilike('name','%'+q+'%').limit(6),rows=r.data||[],ex=rows.some(x=>x.name.toLowerCase()===q.toLowerCase());
+    sug.innerHTML=rows.map(x=>'<button type="button" class="sg" data-n="'+esc(x.name)+'">🏫 '+esc(x.name)+'</button>').join('')+(ex?'':'<button type="button" class="sg new" data-n="'+esc(q)+'">➕ "'+esc(q)+'" pudhusa serkkanum</button>')},250)});
+  sug.addEventListener('click',e=>{const b=e.target.closest('.sg');if(!b)return;inp.value=b.dataset.n;sug.innerHTML=''});
+}
+async function saveEdu(p,msg){
+  const s=$(p+'School').value.trim(),y=+$(p+'Year').value,d=$(p+'Deg').value;
+  if(s.length<3||!y||!d){msg.textContent='School, Year, Degree moonum venum.';return false}
+  const r=await sb.rpc('set_my_education',{p_school:s,p_year:y,p_degree:d});
+  if(r.error){msg.textContent=r.error.message.replace('EDU_INVALID: ','');return false}
+  edu[me.id]={school:r.data||s,year:y,degree:d};paintEdu();return true}
+function profileEdu(){
+  const box=$('profilePanel')?.querySelector('.fields'),sv=$('saveProfile');if(!box||!sv||$('pfSchool'))return;
+  const g=document.createElement('div');g.className='eg';
+  g.innerHTML='<b>🎓 School &amp; Degree</b>'+eduFields('pf')+'<button type="button" class="btn secondary" id="saveEdu">Save education</button><p class="status" id="eduMsg"></p>';
+  sv.insertAdjacentElement('beforebegin',g);wireEdu('pf',edu[me.id]);
+  $('saveEdu').onclick=async()=>{const b=$('saveEdu');b.disabled=true;$('eduMsg').textContent='';const ok=await saveEdu('pf',$('eduMsg'));b.disabled=false;if(ok)$('eduMsg').textContent='Saved ✓'}}
+function eduOverlay(){
+  if($('eOv'))return;const a=$('app');if(a)a.inert=true;
+  const o=document.createElement('div');o.id='eOv';
+  o.innerHTML='<div id="eBox" role="dialog" aria-modal="true"><h2>Profile complete pannunga 🎓</h2><p>School, year, degree venum. Illaama continue panna mudiyaadhu. (Degree neenga sollurathu thaan, verify panna maattom.)</p>'+eduFields('ov')+'<p class="status" id="ovMsg" style="color:#C8312B;font-weight:700"></p><button class="btn" id="ovSave">Save &amp; Continue</button><button class="btn secondary" id="ovOut">Log out</button></div>';
+  document.body.appendChild(o);wireEdu('ov',edu[me.id]);
+  $('ovSave').onclick=async()=>{const b=$('ovSave');b.disabled=true;const ok=await saveEdu('ov',$('ovMsg'));b.disabled=false;if(ok){o.remove();if(a)a.inert=false;const pf=$('pfSchool');if(pf){pf.value=edu[me.id].school;$('pfYear').value=edu[me.id].year;$('pfDeg').value=edu[me.id].degree}}};
+  $('ovOut').onclick=()=>{o.remove();if(a)a.inert=false;$('logout').click()};
+}
+function maybeOverlay(){
+  setTimeout(()=>{const t=setInterval(()=>{if($('gOv'))return;clearInterval(t);if(eduErr)return;const e=edu[me.id];if(e&&e.school&&e.year&&e.degree)return;eduOverlay()},1000)},2500)}
+
+/* ---------- boot ---------- */
+async function boot(){
+  header();composer();moveSpace();feedObs();searchObs();
+  await loadEdu([me.id]);profileEdu();maybeOverlay();
+}
+const w=setInterval(async()=>{const a=$('app');if(!window.__sb||!a||a.classList.contains('hidden'))return;clearInterval(w);sb=window.__sb;const u=(await sb.auth.getUser()).data.user;if(!u)return;me=u;boot()},400);
+})();
+</script>
 </body></html>

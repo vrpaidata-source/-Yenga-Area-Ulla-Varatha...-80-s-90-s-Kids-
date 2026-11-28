@@ -618,15 +618,6 @@ async function boot(){
 }
 const w=setInterval(async()=>{const a=$('app');if(!window.__sb||!a||a.classList.contains('hidden'))return;clearInterval(w);sb=window.__sb;const u=(await sb.auth.getUser()).data.user;if(!u)return;me=u;boot()},400);
 })();
-<!-- ===== Yenga Area FULL add-on (replaces yenga_addon.html + yenga_addon2.html) =====
-     Paste ONCE, just before </body>, after your last <script>.
-     Needs yenga_reg_setup.sql run once in Supabase (for Reg No). -->
-<style>
-:root{--lcd:#FFC400;--disp:'Bricolage Grotesque','Latha','Mukta Malar','Noto Sans Tamil',system-ui,sans-serif}
-body,button,input,textarea,select,.brand small,#gBox{font-family:'Latha','Mukta Malar','Noto Sans Tamil',system-ui,sans-serif}
-@keyframes rspin{to{transform:rotate(1turn)}}
-.toast{background:rgba(20,16,0,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,196,0,.5);color:var(--lcd);font-family:'DotGothic16','Latha',monospace;text-shadow:0 0 6px rgba(255,196,0,.6)}
-
 /* footer Alerts button = old film-roll logo */
 .nav[data-section=alerts] svg{animation:rspin 8s linear infinite}
 

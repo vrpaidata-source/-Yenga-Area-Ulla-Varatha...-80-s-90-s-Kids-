@@ -288,11 +288,7 @@ async function run(){const sb=window.__sb,a=document.getElementById('app');if(!s
  catch(err){console.warn('sign',err)}finally{busy=false;if(document.querySelector(SEL.split(',').map(s=>s+':not([data-sg])').join(',')))schedule()}}
 new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['src','class']});
 })();
-</script><!-- ===== PHASE 5 PATCH: limit messages (Tamil) + "இன்று மீதம்" counter =====
-HOW TO ADD: open dashboard.html, find the LAST line "</body></html>"
-and paste this whole <script> block just BEFORE </body>. Nothing else to change.
-Needs phase5_limits.sql to be run first. -->
-<script>
+</script><script>
 (()=>{
 const $=i=>document.getElementById(i);
 let tt;
@@ -327,6 +323,60 @@ document.addEventListener('click',e=>{
 
 /* first load: wait until dashboard is visible */
 const w=setInterval(()=>{const a=$('app');if(!window.__sb||!a||a.classList.contains('hidden'))return;clearInterval(w);refresh()},400);
+})();
+</script>
+<script>
+(()=>{
+const $=i=>document.getElementById(i);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const css=document.createElement('style');
+css.textContent='#modOv{position:fixed;inset:0;z-index:99998;background:rgba(6,37,38,.7);display:grid;place-items:center;padding:16px}#modBox{width:100%;max-width:380px;background:#fff;border-radius:22px;padding:20px 18px;box-shadow:0 20px 50px rgba(0,0,0,.4)}#modBox h2{margin:0 0 6px;font-family:var(--disp);color:#0B3B3C;font-size:1.2rem}#modBox p{margin:.4em 0 .8em;line-height:1.5}#modBox .q{background:#f6faf9;border-radius:12px;padding:8px 10px;font-size:.85rem;color:#5B6F72;overflow-wrap:anywhere}#modBox button{width:100%;min-height:46px;margin-top:8px;border:0;border-radius:999px;font:700 1rem inherit;cursor:pointer;background:#F5A524;color:#0B3B3C}#modBox button.s{background:#E3EFED}';
+document.head.appendChild(css);
+
+function box(html){let o=$('modOv');if(!o){o=document.createElement('div');o.id='modOv';o.innerHTML='<div id="modBox" role="dialog" aria-modal="true"></div>';document.body.appendChild(o)}$('modBox').innerHTML=html}
+const close=()=>{const o=$('modOv');if(o)o.remove()};
+
+async function showNext(list){
+  const n=list.shift();if(!n){close();return}
+  const q='<div class="q">“'+esc((n.snippet||'').slice(0,100))+'”</div>';
+  if(n.level==='light'){
+    box('<h2>😅 Machi, konjam kavanama!</h2><p>Friends kooda joke-ah irukkalaam, aana mathavangalukku hurt aagaama paathukonga. Idhu warning mattum.</p>'+q+'<button id="mOk">சரி</button>');
+    $('mOk').onclick=()=>showNext(list);
+  }else if(n.level==='repeat'){
+    box('<h2>⚠️ Thirumba thirumba warning</h2><p>Innaiku niraya warnings vanthuduchu. Ithu oru strike-ah count aagum. 30 naalil 3 strikes na account konjam neram suspend aagum.</p><button id="mOk">புரிஞ்சுது</button>');
+    $('mOk').onclick=()=>showNext(list);
+  }else{
+    box('<h2>🚫 Message maraikkapattadhu</h2><p>Unga '+(n.kind==='comment'?'comment':n.kind==='message'?'message':'post')+' kodumaiyaana vaarthai irukkunnu maraikkapattadhu. Idhu 1 strike. Thappu-na appeal pannalaam.</p>'+q+'<button id="mAp">Appeal pannu</button><button class="s" id="mOk">Seri, vittudu</button>');
+    $('mOk').onclick=()=>showNext(list);
+    $('mAp').onclick=async()=>{
+      const why=prompt('Yen idhu thappu nu thonudhu? (short-ah sollunga)','')||'';
+      const r=await window.__sb.rpc('submit_appeal',{p_event:n.id,p_message:why});
+      alert(r.error?'Appeal anuppa mudiyala: '+r.error.message:'✅ Appeal anuppiyachu. Admin paathu mudivu solluvaar.');
+      showNext(list)};
+  }
+}
+
+async function check(){
+  try{const sb=window.__sb;if(!sb)return;
+    const r=await sb.rpc('get_my_mod_notices');
+    if(r.error||!r.data||!r.data.length)return;
+    showNext(r.data.slice());
+  }catch(_){}
+}
+
+/* after posting / commenting / sending a message */
+document.addEventListener('click',e=>{
+  if(e.target.closest('#createPost,#cmtSend,#sendMessage'))setTimeout(check,1500)
+},true);
+
+/* SUSPENDED error (banned in the middle of the session) */
+const _alert=window.alert;
+window.alert=function(t){
+  if(/SUSPENDED/.test(String(t||''))){_alert.call(window,'உங்கள் account suspend செய்யப்பட்டுள்ளது.');document.getElementById('logout')?.click();return}
+  _alert.call(window,t)};
+
+/* on page load: show anything unseen */
+const w=setInterval(()=>{const a=$('app');if(!window.__sb||!a||a.classList.contains('hidden'))return;clearInterval(w);check()},500);
 })();
 </script>
 </body></html>

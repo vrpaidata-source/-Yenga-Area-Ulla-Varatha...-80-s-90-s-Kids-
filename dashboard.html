@@ -618,231 +618,58 @@ async function boot(){
 }
 const w=setInterval(async()=>{const a=$('app');if(!window.__sb||!a||a.classList.contains('hidden'))return;clearInterval(w);sb=window.__sb;const u=(await sb.auth.getUser()).data.user;if(!u)return;me=u;boot()},400);
 })();
-/* footer Alerts button = old film-roll logo */
-.nav[data-section=alerts] svg{animation:rspin 8s linear infinite}
-
-/* header ticker: hidden until a message / notification arrives */
-.tk{max-width:1320px;margin:0 auto;padding:0 16px;max-height:0;opacity:0;overflow:hidden;display:flex;align-items:center;gap:8px;transition:max-height .4s,opacity .3s,padding .4s}
-.tk.on{max-height:64px;opacity:1;padding:0 16px 8px}
-.tkb{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:#17120a;color:var(--lcd);font-size:1.2rem}
-.tkb.ring{animation:ring .25s linear 6;background:var(--red);color:#fff}
-.tkb.gone{opacity:0;transform:scale(0);pointer-events:none;animation:pop .6s ease-in forwards}
-@keyframes ring{25%{transform:rotate(-18deg)}75%{transform:rotate(18deg)}}
-@keyframes pop{40%{transform:scale(1.5);opacity:1}100%{transform:scale(0);opacity:0}}
-.tkv{flex:1;min-width:0;height:44px;overflow:hidden;position:relative;border-radius:14px;background:#17120a;touch-action:pan-y;cursor:pointer}
-.tkt{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;gap:40px;white-space:nowrap;will-change:transform}
-.tki{display:inline-block;color:var(--lcd);font:1rem 'DotGothic16','Latha',monospace;text-shadow:0 0 6px rgba(255,196,0,.5);animation:drop .8s cubic-bezier(.3,1.6,.5,1) both}
-@keyframes drop{from{transform:translateY(-48px) rotate(-10deg);opacity:0}}
-
-/* swipe-left mailbox + Snake */
-.ntbd{position:fixed;inset:0;z-index:89;background:rgba(7,32,33,.5);display:none}.ntbd.on{display:block}
-.ntp{position:fixed;top:0;right:0;bottom:0;width:min(92vw,380px);z-index:90;background:#fff;border-radius:24px 0 0 24px;overflow:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);box-shadow:-12px 0 30px -10px rgba(0,0,0,.35)}
-.ntp.open{transform:none}
-.ntp h2{margin:0;font-family:var(--disp);color:var(--ink);font-size:1.2rem}
-.nth{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.gm{margin-top:16px;padding:12px;border-radius:20px;background:#17120a;text-align:center}
-.gm b,.gsc{font-family:'DotGothic16','Latha',monospace;color:var(--lcd);text-shadow:0 0 6px rgba(255,196,0,.5);font-weight:400}
-.gm canvas{display:block;width:min(100%,280px);aspect-ratio:1;margin:10px auto;border:2px solid var(--lcd);border-radius:10px;touch-action:none;background:rgba(255,196,0,.04)}
-.dp{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(2,56px);gap:6px;justify-content:center;margin-top:8px}
-.dp button{border:0;border-radius:14px;background:rgba(255,196,0,.18);color:var(--lcd);font-size:1.4rem}.dp button:active{background:var(--lcd);color:#17120a}
-.dp .u{grid-column:2}.dp .l{grid-column:1;grid-row:2}.dp .d{grid-column:2;grid-row:2}.dp .r{grid-column:3;grid-row:2}
-
-/* film-roll reel page */
-.rlp{position:fixed;inset:0;z-index:85;background:#0d0a05;display:none;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}.rlp.open{display:flex}
-.rlp::before,.rlp::after{content:"";position:absolute;top:58px;bottom:0;width:10px;background:repeating-linear-gradient(180deg,rgba(255,196,0,.9) 0 16px,transparent 16px 30px);border-radius:2px;z-index:2}
-.rlp::before{left:6px}.rlp::after{right:6px}
-.rlh{display:flex;align-items:center;gap:10px;padding:8px 20px;height:58px;color:var(--lcd)}.rlh svg{width:34px;height:34px;color:var(--lcd);animation:rspin 6s linear infinite}.rlh b{flex:1;font:1.1rem 'DotGothic16','Latha',monospace;font-weight:400}
-.rls{flex:1;min-height:0;overflow-y:auto;scroll-snap-type:y mandatory;margin:0 24px}
-.rlc{height:calc(100dvh - 66px - env(safe-area-inset-top,0px));scroll-snap-align:start;position:relative;padding:4px 0}
-.rlc video{width:100%;height:100%;object-fit:contain;background:#000;border-radius:12px;display:block}
-.rli{position:absolute;left:10px;right:76px;bottom:18px;color:var(--lcd);font:1rem 'DotGothic16','Latha',monospace;text-shadow:0 1px 3px #000,0 0 6px rgba(255,196,0,.5)}.rli small{display:block;color:#fff;font:.85rem 'Latha','Mukta Malar',sans-serif;margin-top:4px;overflow-wrap:anywhere}
-.rla{position:absolute;right:6px;bottom:24px;display:grid;gap:10px}
-.rla button{width:56px;height:56px;border:0;border-radius:50%;background:rgba(23,18,10,.72);color:var(--lcd);font-size:1.3rem;line-height:1.1;display:grid;place-items:center;align-content:center}.rla button span{font-size:.7rem}.rla .on{color:#ff5a4f}
-.rlcm{position:absolute;left:0;right:0;bottom:0;max-height:62%;display:none;flex-direction:column;background:#fff;border-radius:22px 22px 0 0;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:5}.rlcm.open{display:flex}
-.rlcl{overflow:auto;flex:1;margin:8px 0}.rlcr{padding:8px 0;border-bottom:1px dashed var(--line);overflow-wrap:anywhere}.rlcr b{font-family:'DotGothic16',monospace;color:var(--ink);font-weight:400;margin-right:6px}
-
-/* empathy characters under posts */
+</script>
+<!-- ===== ADD-ON: Film-roll Reel button + Reg No header + auto reaction (dashboard code above is unchanged) ===== -->
+<style>
+:root{--lcd:#FFC400}
+/* Alerts nav -> spinning old film-roll logo */
+.nav .frlogo{width:24px;height:24px;stroke:none;fill:none;animation:frspin 6s linear infinite}
+@keyframes frspin{to{transform:rotate(1turn)}}
+#messageSearch,#messagePeople{display:none!important}
+#reqBox .feeditem:not(.frfx)>b,.note[data-k=message]:not(.frfx) .nt>b{visibility:hidden}
+/* Video-only reel page */
+.frp{position:fixed;inset:0;z-index:85;background:#0d0a05;display:none;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}.frp.open{display:flex}
+.frp::before,.frp::after{content:"";position:absolute;top:58px;bottom:0;width:10px;background:repeating-linear-gradient(180deg,rgba(255,196,0,.9) 0 16px,transparent 16px 30px);border-radius:2px;z-index:2;pointer-events:none}
+.frp::before{left:6px}.frp::after{right:6px}
+.frh{display:flex;align-items:center;gap:10px;padding:8px 20px;height:58px;color:var(--lcd)}
+.frh .frlogo{width:34px;height:34px;color:var(--lcd);animation:frspin 6s linear infinite;flex:none}
+.frh b{flex:1;font:400 1.1rem 'DotGothic16','Latha',monospace;color:var(--lcd);letter-spacing:.05em}
+.frh button{position:relative}
+.frbadge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font:700 .68rem/18px sans-serif;text-align:center;padding:0 4px}
+.frs{flex:1;min-height:0;overflow-y:auto;scroll-snap-type:y mandatory;margin:0 24px;overscroll-behavior:contain}
+.frc{height:calc(100dvh - 66px - env(safe-area-inset-top,0px));scroll-snap-align:start;scroll-snap-stop:always;position:relative;padding:4px 0}
+.frc video{width:100%;height:100%;object-fit:contain;background:#000;border-radius:12px;display:block}
+.fri{position:absolute;left:10px;right:76px;bottom:18px;color:var(--lcd);font:400 1.05rem 'DotGothic16','Latha',monospace;letter-spacing:.06em;text-shadow:0 1px 3px #000,0 0 6px rgba(255,196,0,.5)}
+.fri small{display:block;color:#fff;font:.85rem 'Latha','Mukta Malar',sans-serif;letter-spacing:0;margin-top:4px;overflow-wrap:anywhere}
+.fra{position:absolute;right:6px;bottom:24px;display:grid;gap:10px}
+.fra button{width:56px;height:56px;border:0;border-radius:50%;background:rgba(23,18,10,.72);color:var(--lcd);font-size:1.3rem;line-height:1.1;display:grid;place-items:center;align-content:center}
+.fra button span{font-size:.7rem}.fra .on{color:#ff5a4f}
+.frcm{position:absolute;left:0;right:0;bottom:0;max-height:62%;display:none;flex-direction:column;background:#fff;border-radius:22px 22px 0 0;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:5}.frcm.open{display:flex}
+.frcl{overflow:auto;flex:1;margin:8px 0}
+.frcr{padding:8px 0;border-bottom:1px dashed var(--line);overflow-wrap:anywhere}
+.frcr b{font-family:'DotGothic16',monospace;color:var(--ink);font-weight:400;margin-right:6px}
+/* Empathy characters (auto reaction) */
 .kidwrap{display:flex;gap:10px;align-items:center;margin:12px 0 0;padding:10px;border-radius:18px;background:rgba(255,248,228,.7);border:1px dashed var(--gold);perspective:420px;cursor:pointer}
 .kid{width:84px;height:92px;flex:none;filter:drop-shadow(0 8px 8px rgba(0,0,0,.2));transform-style:preserve-3d}
-.kid .head{transform-origin:60px 90px;animation:bob 2.6s ease-in-out infinite}
-.kidwrap[data-s=sad] .head{animation:sob 1.5s ease-in-out infinite}
-.kidwrap[data-s=happy] .kid{animation:jump .8s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(-2px) rotateY(8deg)}}
-@keyframes sob{0%,100%{transform:rotate(-2deg)}40%{transform:rotate(3deg) translateY(3px)}60%{transform:rotate(2deg) translateY(1px)}}
-@keyframes jump{50%{transform:translateY(-10px) rotateY(18deg)}}
-.hp,.hand{display:none}
+.kid .kh{transform-origin:60px 90px;animation:kbob 2.6s ease-in-out infinite}
+.kidwrap[data-s=sad] .kh{animation:ksob 1.5s ease-in-out infinite}
+.kidwrap[data-s=happy] .kid{animation:kjump .8s ease-in-out infinite}
+@keyframes kbob{50%{transform:translateY(-2px) rotateY(8deg)}}
+@keyframes ksob{0%,100%{transform:rotate(-2deg)}40%{transform:rotate(3deg) translateY(3px)}60%{transform:rotate(2deg) translateY(1px)}}
+@keyframes kjump{50%{transform:translateY(-10px) rotateY(18deg)}}
+.kid .hp,.kid .hand{display:none}
 .kidwrap[data-s=happy] .hp,.kidwrap[data-s=ok] .hp{display:inline}
 .kidwrap[data-s=happy] .sd,.kidwrap[data-s=ok] .sd{display:none}
-.kidwrap[data-s=ok] .hand{display:inline;animation:wipe 1.3s ease-out both}
-@keyframes wipe{0%{transform:translate(0,34px)}35%{transform:translate(10px,-4px)}55%{transform:translate(18px,-6px)}75%{transform:translate(8px,-5px)}100%{transform:translate(0,34px);opacity:0}}
-.tr{animation:tear 1.6s ease-in infinite;transform-box:fill-box}.t2{animation-delay:.7s}
-@keyframes tear{0%{transform:translateY(-4px) scale(.5);opacity:0}25%{opacity:1}100%{transform:translateY(30px);opacity:0}}
-.kc{margin-top:8px;padding:7px 12px;font-size:.82rem}
-.bub{min-height:2.6em;font-size:.95rem;line-height:1.45}
-
-/* per-post scenes */
-.scn{position:relative;height:96px;margin:12px 0 0;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#fff8e4,#fff);border:1px dashed var(--gold);cursor:pointer}
-.scn.sm{height:64px}.scn i{position:absolute;font-style:normal;line-height:1}
-.scn .e{font-size:2.6rem;animation:eb 2s ease-in-out infinite}.scn.sm .e{font-size:1.9rem}
-.scn .sc{position:absolute;left:8px;right:8px;bottom:4px;text-align:center;font-size:.82rem;color:var(--ink);font-weight:600;text-shadow:0 0 6px #fff}
-@keyframes eb{50%{transform:translateY(-6px) rotate(-4deg)}}
-.rs,.ht{bottom:-30px;font-size:1.6rem;animation:rise 3s ease-in infinite}@keyframes rise{to{transform:translateY(-130px);opacity:0}}
-.dr{top:-20px;font-size:1.1rem;animation:fall 1.4s linear infinite}@keyframes fall{to{transform:translateY(120px)}}
-.dy{font-size:2.8rem;animation:glow 1.6s ease-in-out infinite}@keyframes glow{50%{filter:drop-shadow(0 0 12px #ffb300) brightness(1.2);transform:scale(1.07)}}
-.tw{font-size:1.5rem;animation:tw 1.2s ease-in-out infinite}@keyframes tw{50%{transform:scale(1.5) rotate(20deg);opacity:.5}}
-.bl{font-size:1.4rem;animation:fly 1.6s ease-in-out infinite}@keyframes fly{0%{left:14%;top:60px}50%{left:55%;top:10px}100%{left:92%;top:60px}}
-.st{top:30px;font-size:1.3rem;animation:steam 2.2s ease-out infinite}@keyframes steam{0%{transform:translateY(30px);opacity:0}30%{opacity:.9}100%{transform:translateY(-14px) scale(1.4);opacity:0}}
-.bus{bottom:20px;font-size:2.2rem;animation:drive 4s linear infinite}@keyframes drive{from{left:-15%}to{left:105%}}
-.rd{left:0;right:0;bottom:16px;height:2px;background:repeating-linear-gradient(90deg,#999 0 14px,transparent 14px 28px)}
-.wb{animation:wb 1.6s ease-in-out infinite!important}@keyframes wb{50%{transform:rotate(12deg)}}
-.pu{animation:pu 1s ease-in-out infinite!important}@keyframes pu{50%{transform:scale(1.25)}}
-.bs{left:50%;top:45%;font-size:1.4rem;animation:bs 1s ease-out forwards}@keyframes bs{to{transform:translate(var(--dx),var(--dy)) scale(1.3);opacity:0}}
+.kidwrap[data-s=ok] .hand{display:inline;animation:kwipe 1.3s ease-out both}
+@keyframes kwipe{0%{transform:translate(0,34px)}35%{transform:translate(10px,-4px)}55%{transform:translate(18px,-6px)}75%{transform:translate(8px,-5px)}100%{transform:translate(0,34px);opacity:0}}
+.kid .tr{animation:ktear 1.6s ease-in infinite;transform-box:fill-box}.kid .t2{animation-delay:.7s}
+@keyframes ktear{0%{transform:translateY(-4px) scale(.5);opacity:0}25%{opacity:1}100%{transform:translateY(30px);opacity:0}}
+.kc{margin-top:8px;padding:7px 12px;font-size:.82rem}.bub{min-height:2.6em;font-size:.95rem;line-height:1.45}
+@media(prefers-reduced-motion:reduce){.kid *,.kid,.frlogo{animation:none!important}}
 </style>
 <script>
 (()=>{
-const $=i=>document.getElementById(i),V=/\.(mp4|webm|mov|m4v)(\?|$)/i,esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const L=document.createElement('link');L.rel='stylesheet';L.href='https://fonts.googleapis.com/css2?family=DotGothic16&family=Mukta+Malar:wght@400;600;700&display=swap';document.head.appendChild(L);
-const KIND={follow:['🤝','உங்களை பின்தொடர்கிறார்'],like:['❤️','உங்கள் post-ஐ விரும்பினார்'],comment:['💬','கருத்து சொன்னார்'],message:['✉️','தபால் அனுப்பினார்']};
-const LOGO='<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="3"/><g fill="currentColor"><circle cx="24" cy="24" r="3.5"/><circle cx="36" cy="24" r="4.5"/><circle cx="30" cy="34.4" r="4.5"/><circle cx="18" cy="34.4" r="4.5"/><circle cx="12" cy="24" r="4.5"/><circle cx="18" cy="13.6" r="4.5"/><circle cx="30" cy="13.6" r="4.5"/></g></svg>';
-const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches,sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const ago=d=>{const s=(Date.now()-new Date(d))/1000;return s<60?'இப்போது':s<3600?Math.floor(s/60)+' நிமிடம் முன்':s<86400?Math.floor(s/3600)+' மணி முன்':Math.floor(s/86400)+' நாள் முன்'};
-let sb,me,tt,bl=new Set();const REG={};let regErr=false;
-function say(m){const t=$('toast');if(!t)return;t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),4000)}
-const R=n=>n==null?'YAU-?????':'YAU-'+String(n).padStart(5,'0');
-async function regs(ids){ids=[...new Set(ids)].filter(i=>i&&!(i in REG));if(!ids.length)return;const r=await sb.rpc('get_reg_nos',{p_ids:ids});if(r.error){console.warn('reg',r.error.message);regErr=true;ids.forEach(i=>REG[i]=null);return}(r.data||[]).forEach(x=>REG[x.user_id]=x.reg_no)}
-async function nm(ids){ids=[...new Set(ids.filter(Boolean))];const m={};if(!ids.length)return m;const r=await sb.from('profiles').select('id,username').in('id',ids);(r.data||[]).forEach(x=>m[x.id]=x.username);return m}
-
-/* ---------- build UI ---------- */
-function ui(){
- document.querySelector('header').insertAdjacentHTML('beforeend','<div class="tk" id="tk"><button class="tkb" id="tkBell" aria-label="தபால் பெட்டி">🔔</button><div class="tkv" id="tkv" role="button" tabindex="0" aria-label="புது அறிவிப்பு — இடப்பக்கம் தள்ளுங்க"><div class="tkt" id="tkt"></div></div></div>');
- const ns=document.querySelector('[data-section=alerts] svg');if(ns)ns.outerHTML=LOGO;
- document.body.insertAdjacentHTML('beforeend',
- '<div class="ntbd" id="ntBd"></div><aside class="ntp" id="ntP" aria-label="தபால் பெட்டி"><div class="nth"><h2>📮 தபால் பெட்டி</h2><button class="close" id="ntX" aria-label="Close">×</button></div><button class="btn secondary" id="ntAll" style="width:100%">எல்லாம் படிச்சாச்சு ✓</button><div id="ntList"></div>'+
- '<div class="gm"><b>🎮 பாம்பு · 1 Player</b><canvas id="gmC" width="256" height="256"></canvas><div class="gsc" id="gmS">SCORE 0 · BEST 0</div><button class="btn" id="gmGo" style="margin-top:8px;width:100%">▶ ஆரம்பி</button><div class="dp"><button class="u" data-d="u" aria-label="Up">▲</button><button class="l" data-d="l" aria-label="Left">◀</button><button class="d" data-d="d" aria-label="Down">▼</button><button class="r" data-d="r" aria-label="Right">▶</button></div></div></aside>'+
- '<section class="rlp" id="rlP" aria-label="ரீல்"><div class="rlh">'+LOGO+'<b>ரீல் · REEL</b><span class="small" id="rlHint" style="color:#fff"></span><button class="close" id="rlX" aria-label="Close">×</button></div><div class="rls" id="rlS"></div><div class="rlcm" id="rlCm"><div class="nth"><h2>💬 கருத்துகள்</h2><button class="close" id="rlCx" aria-label="Close">×</button></div><div class="rlcl" id="rlCl"></div><div class="composer"><input id="rlCi" placeholder="உங்கள் கருத்து…" maxlength="500"><button class="btn" id="rlCs">Send</button></div></div></section>')}
-
-/* ---------- ticker: only when a message/notification ARRIVES ---------- */
-const Q=[];let busy=false,ab=false,y0=0;
-const reelOpen=()=>$('rlP').classList.contains('open');
-async function onNote(x){if(bl.has(x.actor_id)||reelOpen())return;const m=await nm([x.actor_id]),k=KIND[x.kind]||['🔔',''];Q.push(k[0]+' '+(m[x.actor_id]||'ஒருவர்')+' '+k[1]);show()}
-function abortTk(){if(!busy)return;ab=true;Q.length=0;$('tkt').getAnimations().forEach(a=>a.cancel());$('tk').classList.remove('on')}
-async function show(){if(busy)return;busy=true;ab=false;const tk=$('tk'),bell=$('tkBell'),tkt=$('tkt'),tkv=$('tkv');
- while(Q.length&&!ab){const items=Q.splice(0,8);y0=scrollY;document.querySelector('header').classList.remove('hhide');bell.classList.remove('gone','ring');tk.classList.add('on');await sleep(450);if(ab)break;
-  tkt.innerHTML=items.map(t=>'<span class="tki">'+esc(t)+'</span>').join('');
-  if(REDUCE){tkt.style.transform='none';await sleep(5000)}else{
-   const W=tkv.clientWidth,tw=tkt.scrollWidth,SP=60;[...tkt.children].forEach(s=>s.style.animationDelay=(s.offsetLeft/SP)+'s');
-   const a=tkt.animate([{transform:'translateX('+W+'px)'},{transform:'translateX('+(-tw)+'px)'}],{duration:(W+tw)/SP*1000,easing:'linear',fill:'both'});try{await a.finished}catch(_){}}
-  if(!ab){bell.classList.add('ring');await sleep(1500);bell.classList.remove('ring');bell.classList.add('gone');await sleep(700)}
-  tkt.innerHTML='';tk.classList.remove('on');await sleep(500)}
- busy=false;ab=false}
-addEventListener('scroll',()=>{if(busy&&Math.abs(scrollY-y0)>30)abortTk()},{passive:true});
-
-/* ---------- swipe-left mailbox ---------- */
-async function renderNt(){const r=await sb.from('notifications').select('*').eq('user_id',me.id).order('created_at',{ascending:false}).limit(15),rows=r.data||[],m=await nm(rows.map(x=>x.actor_id));
- $('ntList').innerHTML=rows.map(x=>{const k=KIND[x.kind]||['🔔',''];return '<div class="feeditem" style="'+(x.read?'':'background:#fff8e4;border-color:var(--gold)')+'">'+k[0]+' <b>'+esc(m[x.actor_id]||'ஒருவர்')+'</b> '+k[1]+'<div class="small">'+ago(x.created_at)+'</div></div>'}).join('')||'<div class="empty">📮 தபால் இல்ல</div>'}
-function openNt(){$('ntP').classList.add('open');$('ntBd').classList.add('on');renderNt()}
-function closeNt(){$('ntP').classList.remove('open');$('ntBd').classList.remove('on');if(gt){stopG();$('gmGo').textContent='▶ தொடரு'}}
-/* Snake: 1 player, walls wrap (easy) */
-let sn,dir,nd,food,sc=0,hi=0,gt;const N=16;
-try{hi=+localStorage.getItem('yau_snake')||0}catch(_){}
-function place(){do{food={x:Math.random()*N|0,y:Math.random()*N|0}}while(sn.some(s=>s.x===food.x&&s.y===food.y))}
-function draw(){const c=$('gmC'),x=c.getContext('2d'),S=c.width/N;x.clearRect(0,0,c.width,c.height);x.fillStyle='#FFC400';sn.forEach(s=>x.fillRect(s.x*S+1,s.y*S+1,S-2,S-2));x.strokeStyle='#FFC400';x.lineWidth=2;x.strokeRect(food.x*S+3,food.y*S+3,S-6,S-6);$('gmS').textContent='SCORE '+sc+' · BEST '+hi}
-function stopG(){clearInterval(gt);gt=null}
-function startG(){stopG();sn=[{x:8,y:8},{x:7,y:8},{x:6,y:8}];dir=nd={x:1,y:0};sc=0;place();draw();runG()}
-function runG(){stopG();$('gmGo').textContent='⏸ நிறுத்து';gt=setInterval(()=>{dir=nd;const h={x:(sn[0].x+dir.x+N)%N,y:(sn[0].y+dir.y+N)%N};if(sn.some(s=>s.x===h.x&&s.y===h.y)){stopG();$('gmS').textContent='GAME OVER · SCORE '+sc;$('gmGo').textContent='🔁 மறுபடி';return}sn.unshift(h);if(h.x===food.x&&h.y===food.y){sc++;if(sc>hi){hi=sc;try{localStorage.setItem('yau_snake',hi)}catch(_){}}place()}else sn.pop();draw()},150)}
-const D={u:{x:0,y:-1},d:{x:0,y:1},l:{x:-1,y:0},r:{x:1,y:0}};
-function turn(k){const d=D[k];if(d&&dir&&(d.x!==-dir.x||d.y!==-dir.y))nd=d}
-
-/* ---------- film-roll reel page (opened by the footer film-roll button) ---------- */
-let snd=false,io,cur=null,posts=[];
-async function openReel(focus){$('rlP').classList.add('open');history.replaceState(null,'','#reel');await loadReel(focus)}
-function closeReel(){document.querySelectorAll('#rlS video').forEach(v=>v.pause());$('rlP').classList.remove('open');$('rlCm').classList.remove('open');if(location.hash.startsWith('#reel'))history.replaceState(null,'','#home')}
-async function loadReel(focus){const S=$('rlS');S.innerHTML='<div class="empty" style="color:var(--lcd)">⏳</div>';
- const[p,b,f]=await Promise.all([sb.from('posts').select('id,user_id,body,image_url,created_at').order('created_at',{ascending:false}).limit(100),sb.from('blocks').select('blocked_id').eq('blocker_id',me.id),sb.from('follows').select('following_id').eq('follower_id',me.id)]);
- const blk=new Set((b.data||[]).map(x=>x.blocked_id)),fo=new Set((f.data||[]).map(x=>x.following_id));let v=(p.data||[]).filter(x=>x.image_url&&V.test(x.image_url)&&!blk.has(x.user_id));
- const st=v.length?await sb.from('user_settings').select('user_id,is_private').in('user_id',[...new Set(v.map(x=>x.user_id))]):{data:[]},priv=new Set((st.data||[]).filter(x=>x.is_private).map(x=>x.user_id));
- posts=v.filter(x=>x.user_id===me.id||!priv.has(x.user_id)||fo.has(x.user_id)).slice(0,20);
- if(!posts.length){S.innerHTML='<div class="empty" style="color:var(--lcd);font-family:DotGothic16,monospace">இன்னும் video இல்ல</div>';return}
- const ids=posts.map(x=>x.id);await regs(posts.map(x=>x.user_id));$('rlHint').textContent=regErr?'⚠️ SQL run பண்ணுங்க':'';
- const[l,c]=await Promise.all([sb.from('likes').select('post_id,user_id').in('post_id',ids),sb.from('comments').select('post_id').in('post_id',ids)]),lk={},cm={},my=new Set();
- (l.data||[]).forEach(x=>{lk[x.post_id]=(lk[x.post_id]||0)+1;if(x.user_id===me.id)my.add(String(x.post_id))});(c.data||[]).forEach(x=>cm[x.post_id]=(cm[x.post_id]||0)+1);
- S.innerHTML=posts.map(x=>{const Lk=my.has(String(x.id)),n=lk[x.id]||0;return '<div class="rlc" data-id="'+x.id+'" data-uid="'+x.user_id+'"><video loop playsinline preload="metadata" muted src="'+esc(x.image_url)+'"></video><div class="rli">'+R(REG[x.user_id])+'<small>'+esc((x.body||'').slice(0,120))+'</small></div><div class="rla"><button data-a="like" data-n="'+n+'" class="'+(Lk?'on':'')+'" aria-label="Like"><b>'+(Lk?'❤️':'🤍')+'</b><span>'+(n||'')+'</span></button><button data-a="cmt" data-n="'+(cm[x.id]||0)+'" aria-label="Comments">💬<span>'+(cm[x.id]||'')+'</span></button><button data-a="shr" aria-label="Share">↗️</button></div></div>'}).join('');
- io&&io.disconnect();io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target.querySelector('video');if(e.isIntersecting){v.dataset.act=1;v.muted=!snd;v.play().catch(()=>{})}else{delete v.dataset.act;v.pause()}}),{root:S,threshold:.65});
- S.querySelectorAll('.rlc').forEach(c=>{io.observe(c);const v=c.querySelector('video');v.addEventListener('loadeddata',()=>{if(v.dataset.act)v.play().catch(()=>{})})});
- if(focus)S.querySelector('[data-id="'+CSS.escape(focus)+'"]')?.scrollIntoView()}
-async function openCm(id){cur=posts.find(x=>String(x.id)===String(id));$('rlCm').classList.add('open');$('rlCi').value='';await loadCm()}
-async function loadCm(){const r=await sb.from('comments').select('*').eq('post_id',cur.id).order('created_at'),rows=r.data||[];await regs(rows.map(x=>x.user_id));$('rlCl').innerHTML=rows.map(x=>'<div class="rlcr"><b>'+R(REG[x.user_id])+'</b>'+esc(x.body)+'</div>').join('')||'<div class="empty">முதல் கருத்து நீங்களே!</div>'}
-async function shareReel(id){const url=location.origin+location.pathname+'#reel/'+id;if(navigator.share){try{await navigator.share({title:'Yenga Area ரீல்',url})}catch(_){}return}try{await navigator.clipboard.writeText(url);say('🔗 Link copy ஆச்சு!')}catch(_){prompt('Link:',url)}}
-
-/* ---------- empathy characters ---------- */
-const SEVERE=/(suicide|kill myself|end my life|want to die|தற்கொலை|சாகணும்|சாகப்போறேன்|சாக போறேன்|உயிரை மாய்)/i;
-const SAD=/(\bsad\b|\bcry|lonely|depress|heartbroken|break ?up|passed away|\bdied\b|\bdeath\b|miss you|sogam|kashtam|kastam|alugai|aluven|thaniya|சோக|கஷ்ட|வருத்த|அழு|அழுகை|தனிமை|இறந்|மரண|பிரிவு|தோல்வி|மனசு உடை|இழந்)/i;
-const HAPPY=/(happy|birthday|congrat|promotion|wedding|\bwon\b|passed (the )?exam|வாழ்த்து|மகிழ்ச்சி|சந்தோஷம்|வெற்றி|பிறந்தநாள்|திருமண|புது வீடு|santhosham|vazhthukal|mahizhchi)/i;
-const SET={sad:[["ஏன் இப்படி இருக்குனு புரியுது 💛","மனசு கனமா இருக்கும் போது அழுகை வர்றது இயல்பு தான்.","இங்க comment-ல சொல்லுங்க… நாங்க எல்லாரும் கேக்குறோம் 🤗"],["அழாதீங்க… நான் இருக்கேன் 🤗","எல்லா கஷ்டமும் ஒரு நாள் கடந்து போகும்; இன்னைக்கு தான் ரொம்ப கனமா தெரியுது.","மெதுவா மூச்சு விடுங்க. நாங்க கூடவே இருக்கோம்."]],happy:[["வாவ்! சூப்பர் 🎉","உங்க சந்தோஷம் எங்களுக்கும் தொத்திக்கிச்சு!","ஒரு வாழ்த்து comment போடுங்க 💛"]]};
-const HINT={sad:'😢 …(என்னை தொடுங்க)',happy:'🥳 (என்னை தொடுங்க!)'};
-const SEV_MSG='நீங்க தனியா இல்ல. இப்பவே நம்பிக்கையான ஒருத்தருக்கு போன் பண்ணுங்க. இந்தியாவில் Tele-MANAS 14416 (இலவசம்) உதவும்.';
-const KID=()=>'<svg class="kid" viewBox="0 0 120 130" aria-hidden="true"><ellipse cx="60" cy="124" rx="30" ry="5" fill="rgba(0,0,0,.12)"/><path d="M32 126c0-26 12-40 28-40s28 14 28 40z" fill="#14787A"/><g class="head"><circle cx="60" cy="52" r="34" fill="#E9B98A"/><path d="M26 50c0-26 16-34 34-34s34 8 34 34c-8-12-20-16-34-16s-26 4-34 16z" fill="#2a1a12"/><circle cx="43" cy="64" r="5" fill="#f08a7e" opacity=".5"/><circle cx="77" cy="64" r="5" fill="#f08a7e" opacity=".5"/><ellipse cx="47" cy="54" rx="4" ry="5.5" fill="#1b1b1b"/><ellipse cx="73" cy="54" rx="4" ry="5.5" fill="#1b1b1b"/><circle cx="48.5" cy="52" r="1.6" fill="#fff"/><circle cx="74.5" cy="52" r="1.6" fill="#fff"/>'+
-'<g class="sd"><path d="M38 43l14 5M82 43l-14 5" stroke="#2a1a12" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M50 76q10-9 20 0" stroke="#7a3b2e" stroke-width="3" stroke-linecap="round" fill="none"/><path class="tr" d="M42 62q-5 9 0 12q5-3 0-12z" fill="#7ed3ff"/><path class="tr t2" d="M78 62q-5 9 0 12q5-3 0-12z" fill="#7ed3ff"/></g>'+
-'<g class="hp"><path d="M39 44q8-6 14 0M67 44q8-6 14 0" stroke="#2a1a12" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M48 68q12 14 24 0z" fill="#7a3b2e"/></g></g><g class="hand"><circle cx="34" cy="68" r="9" fill="#E9B98A" stroke="#c9976a" stroke-width="2"/></g></svg>';
-function type(el,txt,done){let i=0;el.textContent='';const t=setInterval(()=>{el.textContent=txt.slice(0,++i);if(i>=txt.length){clearInterval(t);done&&done()}},28)}
-function react(w,mood){if(w._busy)return;w._busy=1;const b=w.querySelector('.bub'),set=SET[mood][Math.floor(Math.random()*SET[mood].length)];let i=0;w.dataset.s=mood==='sad'?'ok':'happy';
- const step=()=>{if(i>=set.length){w._busy=0;return}type(b,set[i++],()=>setTimeout(step,1200))};step()}
-/* ---------- per-post scenes: every post gets an animation that matches its reason ---------- */
-const rep=(n,f)=>Array.from({length:n},(_,i)=>f(i)).join('');
-const E=(ch,l,t,c)=>'<i class="e'+(c?' '+c:'')+'" style="left:calc('+l+' - 24px);top:'+t+'px">'+ch+'</i>';
-const SC=[
-{k:'diya',re:/(\brip\b|இரங்கல்|அஞ்சலி|condolence|காலமா|passed away|இறைவனடி)/i,h:'<i class="dy" style="left:calc(50% - 24px);top:8px">🪔</i>',hint:'🪔 தொடுங்க',m:['ஆழ்ந்த இரங்கல் 🙏','அவர் ஆன்மா சாந்தி அடையட்டும்.'],b:['🕊️','🌼']},
-{k:'cake',re:/(birthday|bday|பிறந்தநாள்|பிறந்த நாள்)/i,h:E('🎂','50%',14)+rep(3,i=>'<i class="rs" style="left:'+(10+i*38)+'%;animation-delay:'+i*.7+'s">🎈</i>'),hint:'🎂 தொடுங்க!',m:['பிறந்தநாள் வாழ்த்துகள்! 🎉','நூறு வயசு வாழ்க! 🎂'],b:['🎉','🎊','✨']},
-{k:'fest',re:/(diwali|deepavali|தீபாவளி|pongal|பொங்கல்|festival|திருவிழா|புத்தாண்டு|new year)/i,h:E('🎆','50%',16)+rep(4,i=>'<i class="tw" style="left:'+(8+i*26)+'%;top:'+(10+(i%2)*40)+'px;animation-delay:'+i*.3+'s">✨</i>'),hint:'🎆 தொடுங்க!',m:['இனிய திருநாள் வாழ்த்துகள்! 🎆','எல்லாருக்கும் சந்தோஷம் பொங்கட்டும்! 🍲'],b:['🎆','✨','🎇']},
-{k:'cric',re:/(cricket|கிரிக்கெட்|\bipl\b|\bmatch\b|kalli|கல்லி)/i,h:E('🏏','12%',34,'wb')+'<i class="bl">⚾</i>',hint:'🏏 தொடுங்க!',m:['சிக்ஸர்! 🏏🔥','கல்லி கிரிக்கெட் மாதிரி வராது மச்சி!'],b:['🏏','⚾','🔥']},
-{k:'rain',re:/(\brain|மழை|mazhai|புயல்)/i,h:E('☔','50%',22)+rep(8,i=>'<i class="dr" style="left:'+(6+i*12)+'%;animation-delay:'+(i%4)*.35+'s">💧</i>'),hint:'🌧️ தொடுங்க',m:['மழைல ஒரு டீ… வேற லெவல் ☕','குடை எடுத்துட்டு போங்க ☔'],b:['💧','☔']},
-{k:'food',re:/(food|biryani|dosa|idli|சாப்பாடு|பிரியாணி|தோசை|இட்லி|சாய்|காபி|\btea\b|coffee|பரோட்டா|சமையல்)/i,h:E('🍛','50%',32)+rep(3,i=>'<i class="st" style="left:'+(42+i*7)+'%;animation-delay:'+i*.6+'s">♨️</i>'),hint:'🍛 தொடுங்க',m:['வாசனை இங்க வரைக்கும் வருது! 😋','எனக்கும் ஒரு பார்சல்! 🍛'],b:['😋','🍛']},
-{k:'trip',re:/(travel|\btrip\b|journey|பயணம்|சுற்றுலா|\bbus\b|\btrain\b|பஸ்|ரயில்)/i,h:'<i class="rd"></i><i class="bus">🚌</i>',hint:'🚌 தொடுங்க',m:['பாதுகாப்பா போயிட்டு வாங்க! 🚌','ஜன்னல் சீட் எனக்கு! 😄'],b:['🛣️','🚌']},
-{k:'love',re:/(\blove|காதல்|அன்பு|kadhal|anbu)/i,h:rep(5,i=>'<i class="ht" style="left:'+(8+i*20)+'%;animation-delay:'+i*.5+'s">'+(i%2?'💛':'❤️')+'</i>'),hint:'❤️ தொடுங்க',m:['அழகான அன்பு 💛','அன்பே சிவம்! ❤️'],b:['❤️','💛']},
-{k:'nost',re:/(80s|90s|kids|radio|cassette|ரேடியோ|கேசட்|\bstd\b|தபால்|நினைவு|nostalgia|பழைய)/i,h:E('📼','35%',18,'wb')+E('📻','65%',18,'pu'),hint:'📼 தொடுங்க',m:['அந்த நாட்கள் திரும்ப வருமா? 📼','கேசட்டை பென்சிலால ரிவைண்ட் பண்ண நாட்கள்… 📻'],b:['📼','📻','✨']}
-];
-const FB={
- text:{h:E('✍️','50%',8,'wb'),hint:'✍️ புது post',m:['நல்லா எழுதியிருக்கீங்க! ✍️','இன்னும் எழுதுங்க! 💛'],b:['✍️','✨']},
- photo:{h:E('📸','50%',8)+'<i class="tw" style="left:60%;top:6px">✨</i>',hint:'📸 தொடுங்க',m:['சூப்பர் photo! 📸','கலக்கல் கிளிக்! ✨'],b:['📸','✨']},
- video:{h:E('🎬','50%',8,'wb'),hint:'🎬 ஆக்‌ஷன்!',m:['Camera rolling… 🎬','பிளாக்பஸ்டர்! 🍿'],b:['🎬','🍿']},
- audio:{h:E('🎵','35%',8)+rep(3,i=>'<i class="rs" style="left:'+(52+i*12)+'%;animation-delay:'+i*.6+'s">🎶</i>'),hint:'🎵 தொடுங்க',m:['நல்ல பாட்டு! 🎶','இன்னொரு தடவை போடுங்க! 🎧'],b:['🎵','🎶']}};
-function burst(el,em){for(let i=0;i<10;i++){const s=document.createElement('i');s.className='bs';s.textContent=em[i%em.length];s.style.setProperty('--dx',((Math.random()*2-1)*120|0)+'px');s.style.setProperty('--dy',((-Math.random())*70-10|0)+'px');el.appendChild(s);setTimeout(()=>s.remove(),1100)}}
-function mediaKind(p){const m=p.querySelector(':scope > img,:scope > video,:scope > audio');if(!m)return'text';const u=m.getAttribute('src')||'';return(m.tagName==='VIDEO'||/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u))?'video':(m.tagName==='AUDIO'||/\.(mp3|m4a|wav|ogg|aac)(\?|$)/i.test(u))?'audio':'photo'}
-function addScene(pa,s,sm){pa.insertAdjacentHTML('beforebegin','<div class="scn'+(sm?' sm':'')+'" role="button" tabindex="0" aria-label="animation">'+s.h+'<span class="sc">'+esc(s.hint)+'</span></div>');const w=pa.previousElementSibling,go=()=>{if(w._b)return;w._b=1;burst(w,s.b);const c=w.querySelector('.sc');type(c,s.m[Math.random()*s.m.length|0],()=>setTimeout(()=>{c.textContent=s.hint;w._b=0},1800))};w.onclick=go;w.onkeydown=e=>{if(e.key==='Enter')go()}}
-function attach(){document.querySelectorAll('#feed article.post:not([data-k])').forEach(p=>{p.dataset.k=1;const txt=p.querySelector('.bodytext')?.textContent||'',pa=p.querySelector('.postactions');if(!pa)return;
- const sev=SEVERE.test(txt);let mood=null,sc=null;
- if(sev)mood='sad';else if(SC[0].re.test(txt))sc=SC[0];else if(SAD.test(txt))mood='sad';else{sc=SC.find(x=>x.re.test(txt))||null;if(!sc&&HAPPY.test(txt))mood='happy'}
- if(sc){addScene(pa,sc);return}
- if(mood){pa.insertAdjacentHTML('beforebegin','<div class="kidwrap" role="button" tabindex="0" data-s="'+mood+'">'+KID()+'<div><div class="bub">'+esc(sev?SEV_MSG:HINT[mood])+'</div><button type="button" class="btn secondary kc">💬 '+(mood==='sad'?'ஆறுதல் சொல்லுங்க':'வாழ்த்துங்க')+'</button></div></div>');
-  const w=p.querySelector('.kidwrap');if(!sev)w.onclick=e=>{if(e.target.closest('.kc'))return;react(w,mood)};w.onkeydown=e=>{if(e.key==='Enter'&&!sev)react(w,mood)};w.querySelector('.kc').onclick=e=>{e.stopPropagation();p.querySelector('[data-a=cmt]')?.click()};return}
- addScene(pa,FB[mediaKind(p)],1)})}
-
-/* ---------- wiring ---------- */
-function wire(){
- const tkv=$('tkv');let x0=null;tkv.addEventListener('pointerdown',e=>x0=e.clientX);tkv.addEventListener('pointerup',e=>{if(x0==null)return;const d=e.clientX-x0;x0=null;if(d<-40||Math.abs(d)<8)openNt()});tkv.onkeydown=e=>{if(e.key==='Enter')openNt()};
- $('tkBell').onclick=openNt;$('ntX').onclick=$('ntBd').onclick=closeNt;
- $('ntAll').onclick=async()=>{await sb.from('notifications').update({read:true}).eq('user_id',me.id).eq('read',false);renderNt()};
- $('gmGo').onclick=()=>{if(gt){stopG();$('gmGo').textContent='▶ தொடரு'}else if(sn&&$('gmGo').textContent.includes('தொடரு'))runG();else startG()};
- document.querySelectorAll('.dp button').forEach(b=>b.onclick=()=>turn(b.dataset.d));
- document.addEventListener('keydown',e=>{const k={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r'}[e.key];if(k&&$('ntP').classList.contains('open')){e.preventDefault();turn(k)}});
- let g0=null;const gc=$('gmC');gc.addEventListener('pointerdown',e=>g0=[e.clientX,e.clientY]);gc.addEventListener('pointerup',e=>{if(!g0)return;const dx=e.clientX-g0[0],dy=e.clientY-g0[1];g0=null;if(Math.max(Math.abs(dx),Math.abs(dy))<20)return;turn(Math.abs(dx)>Math.abs(dy)?(dx>0?'r':'l'):(dy>0?'d':'u'))});
- /* footer film-roll button opens the reel (capture phase, so it wins over the old Alerts handler) */
- document.addEventListener('click',e=>{if(e.target.closest('[data-section=alerts]')){e.stopImmediatePropagation();e.preventDefault();openReel()}},true);
- $('rlX').onclick=closeReel;$('rlCx').onclick=()=>$('rlCm').classList.remove('open');
- $('rlS').addEventListener('click',async e=>{const b=e.target.closest('.rla button'),c=e.target.closest('.rlc');if(!c)return;const id=c.dataset.id,uid=c.dataset.uid;
-  if(!b){if(e.target.tagName==='VIDEO'){snd=!snd;e.target.muted=!snd;say(snd?'🔊':'🔇')}return}
-  const k=b.dataset.a;
-  if(k==='like'){const on=b.classList.contains('on'),n=+b.dataset.n;b.disabled=true;const r=on?await sb.from('likes').delete().eq('post_id',id).eq('user_id',me.id):await sb.from('likes').insert({post_id:id,user_id:me.id});b.disabled=false;if(r.error)return alert(r.error.message);b.classList.toggle('on',!on);b.dataset.n=n+(on?-1:1);b.querySelector('b').textContent=on?'🤍':'❤️';b.querySelector('span').textContent=b.dataset.n>0?b.dataset.n:'';if(!on&&uid!==me.id)sb.from('notifications').insert({user_id:uid,actor_id:me.id,kind:'like',content:'liked your post'})}
-  else if(k==='cmt')openCm(id);else if(k==='shr')shareReel(id)});
- $('rlCs').onclick=async()=>{const body=$('rlCi').value.trim();if(!body||!cur)return;const r=await sb.from('comments').insert({post_id:cur.id,user_id:me.id,body});if(r.error)return alert(r.error.message);$('rlCi').value='';if(cur.user_id!==me.id)sb.from('notifications').insert({user_id:cur.user_id,actor_id:me.id,kind:'comment',content:body.slice(0,120)});const c=document.querySelector('#rlS [data-id="'+cur.id+'"] [data-a=cmt]');if(c){c.dataset.n=+c.dataset.n+1;c.querySelector('span').textContent=c.dataset.n}loadCm()};
- addEventListener('hashchange',()=>{const h=location.hash.slice(1).split('/');if(h[0]==='reel'&&!$('rlP').classList.contains('open')){$('rlP').classList.add('open');loadReel(h[1])}});
-}
-const w=setInterval(async()=>{if(!window.__sb||$('app').classList.contains('hidden'))return;clearInterval(w);sb=window.__sb;me=(await sb.auth.getUser()).data.user;if(!me)return;
- const b=await sb.from('blocks').select('blocked_id').eq('blocker_id',me.id);bl=new Set((b.data||[]).map(x=>x.blocked_id));
- ui();wire();new MutationObserver(attach).observe($('feed'),{childList:true,subtree:true});attach();
- sb.channel('tk-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:'user_id=eq.'+me.id},pl=>{onNote(pl.new);if($('ntP').classList.contains('open'))renderNt()}).subscribe();
- const h=location.hash.slice(1).split('/');if(h[0]==='reel'){$('rlP').classList.add('open');loadReel(h[1])}},300);
-})();
-</script>
-</script>
-</body></html>
+const $=i=>document.getElementById(i),V=/\.(mp4|webm|mov|m4v)(\?|$)/i;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const F=document.createElement('link');F.rel='stylesheet';F.href='https://fonts.googleapis.com/css2?family=DotGothic16&family=Mukta+Malar:wght@400;600;700&display=swap';document.head.appendChild(F);
+const LOG

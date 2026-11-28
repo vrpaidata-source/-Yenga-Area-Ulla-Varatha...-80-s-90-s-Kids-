@@ -380,11 +380,14 @@ const w=setInterval(()=>{const a=$('app');if(!window.__sb||!a||a.classList.conta
 })();
 </script>
 <script>
-/* ===== PHASE 7 PART A: header, follow btn, 3-dot menu, create sheet, My space, search follow, school/degree ===== */
+/* ===== PHASE 7 PART A (v2): header, follow btn, 3-dot menu, create sheet, My space, search follow, school/college/degree ===== */
 (()=>{
 const $=i=>document.getElementById(i);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const DEG=['SSLC / 10th','HSC / 12th','ITI','Diploma','B.E. / B.Tech','B.Sc','B.Com','B.A','BBA','BCA','B.Pharm','B.Ed','MBBS / BDS','M.E. / M.Tech','M.Sc','M.Com','M.A','MBA','MCA','Ph.D','Studying / இன்னும் படிக்கிறேன்','Other'];
+const COLLEGE=new Set(['ITI','Diploma','B.E. / B.Tech','B.Sc','B.Com','B.A','BBA','BCA','B.Pharm','B.Ed','MBBS / BDS','M.E. / M.Tech','M.Sc','M.Com','M.A','MBA','MCA','Ph.D']);
+const LVL={'SSLC / 10th':'10th','HSC / 12th':'12th'};
+const short=d=>String(d||'').replace(/\s*\/\s*/g,'/');
 let YEARS='';for(let y=2026;y>=1985;y--)YEARS+='<option value="'+y+'">'+y+'</option>';
 let sb,me,eduErr=false;const edu={};let follows=null;
 
@@ -393,7 +396,11 @@ css.textContent=`
 header{transition:transform .3s ease}header.hhide{transform:translateY(-115%)}
 .brand{min-width:0}.brand>div{min-width:0;line-height:1.15}.brand #hdName{display:block;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50vw}.brand .avatar{flex:none}
 .post{position:relative}
-.namerow{display:flex;align-items:center;gap:8px;min-width:0}
+.namerow{display:flex;align-items:center;gap:6px;min-width:0}
+.posthead .meta .namerow b{padding-top:.75em;margin-top:-.6em}
+.cap{position:relative;display:inline-block}
+.cap::before{content:"🎓";position:absolute;left:50%;top:-.85em;transform:translateX(-50%) rotate(-10deg);font-size:.7em;line-height:1;pointer-events:none}
+.deg{flex:none;font-size:.72rem;font-weight:700;color:var(--ink);background:var(--mint);border-radius:7px;padding:1px 7px;white-space:nowrap}
 .fbtn{margin:0!important;padding:3px 12px!important;font-size:.78rem!important;border-radius:999px!important;flex:none;background:var(--gold)!important;color:var(--ink)!important;box-shadow:none!important}
 .edu{font-size:.78rem;color:var(--teal);font-weight:600;line-height:1.3;overflow-wrap:anywhere}.edu:empty{display:none}
 .dots{margin-left:auto;border:0;background:none;width:40px;height:40px;border-radius:50%;font-size:1.5rem;line-height:1;color:var(--muted);flex:none}.dots:hover{background:var(--mint)}
@@ -413,17 +420,19 @@ header{transition:transform .3s ease}header.hhide{transform:translateY(-115%)}
 .cmpact .btn{flex:none;padding:12px 22px}
 .sfb{margin-left:auto;flex:none;border:0;border-radius:999px;padding:8px 16px;font-weight:700;background:var(--gold);color:var(--ink)}.sfb.on{background:var(--mint);color:var(--ink)}
 .eg{border:1.5px solid var(--line);border-radius:18px;padding:12px;display:grid;gap:10px;background:#f6faf9}.eg>b{font-family:var(--disp);color:var(--ink)}
+.eg label,#eBox label{font-weight:600;font-size:.92rem;display:grid;gap:5px}
+.eg label.chk,#eBox label.chk{display:flex;gap:10px;align-items:center;font-weight:600}.chk input{width:22px;height:22px;padding:0;accent-color:var(--teal);flex:none}
+.colbox{display:grid;gap:10px}
 .sug{display:grid;gap:4px;margin-top:-6px}.sg{border:0;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-weight:600}.sg.new{border-style:dashed;color:var(--teal)}
 .eg select,#eBox select{width:100%;border:1.5px solid var(--line);background:#f6faf9;border-radius:14px;padding:12px 14px;font-size:16px}
 #eOv{position:fixed;inset:0;z-index:99997;background:rgba(6,37,38,.88);display:grid;place-items:center;padding:16px;overflow:auto}
 #eBox{width:100%;max-width:420px;background:#fff;border-radius:24px;padding:20px 18px;box-shadow:0 20px 50px rgba(0,0,0,.45);display:grid;gap:10px}
 #eBox h2{margin:0;font-family:var(--disp);color:var(--ink);font-size:1.3rem}#eBox p{margin:0;color:var(--muted);font-size:.92rem}
-#eBox label{font-weight:600;font-size:.92rem;display:grid;gap:5px}
 .myspace .tilelist{margin-top:6px}
 `;
 document.head.appendChild(css);
 
-/* ---------- 1) HEADER: my photo + my name + tagline; hides on scroll ---------- */
+/* ---------- 1) HEADER ---------- */
 function header(){
   const brand=document.querySelector('.brand'),av=$('openProfile');
   if(brand&&av&&!$('hdName')){brand.innerHTML='';brand.appendChild(av);const d=document.createElement('div');d.innerHTML='<span id="hdName"></span><small>இது நம்ம ஏரியா., நம்ம இடம்</small>';brand.appendChild(d)}
@@ -437,7 +446,7 @@ async function refreshName(){
   const e=$('hdName');if(e)e.textContent=n}
 document.addEventListener('click',e=>{if(e.target.closest('#saveProfile'))setTimeout(refreshName,1500)});
 
-/* ---------- 2) CREATE: composer opens only when Create is tapped ---------- */
+/* ---------- 2) CREATE sheet ---------- */
 let bd;
 function composer(){
   const pb=$('postBody');if(!pb)return;const card=pb.closest('.card');card.classList.add('cmp');
@@ -460,7 +469,7 @@ function openCmp(){const c=$('postBody').closest('.card');c.classList.add('open'
 function closeCmp(){const c=$('postBody').closest('.card');c.classList.remove('open');bd.classList.remove('show')}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-section="create"]');if(b){e.stopImmediatePropagation();e.preventDefault();openCmp()}},true);
 
-/* ---------- 3) MY SPACE moves into the edit-profile sheet ---------- */
+/* ---------- 3) MY SPACE -> edit profile sheet ---------- */
 function moveSpace(){
   const t=$('tileProfile'),pp=$('profilePanel');if(!t||!pp)return;
   const card=t.closest('.card'),grid=card.querySelector('.tilelist'),box=pp.querySelector('.box');
@@ -468,18 +477,34 @@ function moveSpace(){
   t.classList.add('hidden');card.classList.add('hidden');
 }
 
-/* ---------- 4) FEED: follow beside name, school line, 3-dot menu ---------- */
+/* ---------- 4) FEED ---------- */
 async function loadEdu(ids){
   const need=ids.filter(u=>u&&!(u in edu));if(!need.length)return true;
-  const r=await sb.from('profiles').select('id,edu_school_id,edu_year,edu_degree').in('id',need);
+  const r=await sb.from('profiles').select('id,edu_school_id,edu_year,edu_degree,edu_college_id,edu_college_year,edu_show_level').in('id',need);
   if(r.error){eduErr=true;need.forEach(u=>edu[u]=null);return false}
-  const sids=[...new Set((r.data||[]).map(x=>x.edu_school_id).filter(Boolean))],sn={};
+  const sids=[...new Set((r.data||[]).map(x=>x.edu_school_id).filter(Boolean))],cids=[...new Set((r.data||[]).map(x=>x.edu_college_id).filter(Boolean))],sn={},cn={};
   if(sids.length){const s=await sb.from('yau_schools').select('id,name').in('id',sids);(s.data||[]).forEach(x=>sn[x.id]=x.name)}
+  if(cids.length){const c=await sb.from('yau_colleges').select('id,name').in('id',cids);(c.data||[]).forEach(x=>cn[x.id]=x.name)}
   need.forEach(u=>edu[u]=null);
-  (r.data||[]).forEach(x=>edu[x.id]={school:sn[x.edu_school_id]||'',year:x.edu_year,degree:x.edu_degree});
+  (r.data||[]).forEach(x=>edu[x.id]={school:sn[x.edu_school_id]||'',year:x.edu_year,degree:x.edu_degree,college:cn[x.edu_college_id]||'',cyear:x.edu_college_year,showLevel:!!x.edu_show_level});
   return true}
-function eduHTML(e){if(!e||(!e.school&&!e.year&&!e.degree))return'';return '🎓 '+[e.degree,e.school,e.year].filter(Boolean).map(esc).join(' · ')}
-function paintEdu(){document.querySelectorAll('.edu[data-u]').forEach(el=>{el.innerHTML=eduHTML(edu[el.dataset.u])})}
+function eduInfo(e){
+  if(!e||(!e.school&&!e.year&&!e.degree&&!e.college))return null;
+  const col=COLLEGE.has(e.degree);
+  if(col&&e.college)return{deg:short(e.degree),line:[e.college,e.cyear].filter(Boolean).join(' · ')};
+  const lv=e.showLevel&&LVL[e.degree]?LVL[e.degree]+' · ':'';
+  return{deg:col?short(e.degree):'',line:lv+[e.school,e.year].filter(Boolean).join(' · ')}}
+function graphemes(t){try{return[...new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(t)].map(x=>x.segment)}catch(_){return Array.from(t)}}
+function paintEdu(){
+  document.querySelectorAll('.edu[data-u]').forEach(el=>{
+    const info=eduInfo(edu[el.dataset.u]);el.textContent=info?info.line:'';
+    const row=el.previousElementSibling;if(!row||!row.classList.contains('namerow'))return;
+    row.querySelectorAll('.deg').forEach(x=>x.remove());
+    if(info&&info.deg){
+      const b=row.querySelector('b'),d=document.createElement('span');d.className='deg';d.textContent=info.deg;b.insertAdjacentElement('afterend',d);
+      if(!b.dataset.cap){const g=graphemes(b.textContent||'');if(g.length){const last=g.pop();b.innerHTML=esc(g.join(''))+'<span class="cap">'+esc(last)+'</span>';b.dataset.cap=1}}
+    }
+  })}
 let ft;
 async function fixFeed(){
   const arts=[...$('feed').querySelectorAll('article.post:not([data-p7])')];if(!arts.length)return;
@@ -497,7 +522,6 @@ async function fixFeed(){
     const d=document.createElement('button');d.type='button';d.className='dots';d.setAttribute('aria-label','More');d.textContent='⋮';d.dataset.mine=mine?'1':'';head.appendChild(d)});
   await loadEdu(uids);paintEdu();
 }
-new MutationObserver(()=>{clearTimeout(ft);ft=setTimeout(fixFeed,30)});
 function feedObs(){new MutationObserver(()=>{clearTimeout(ft);ft=setTimeout(fixFeed,30)}).observe($('feed'),{childList:true});fixFeed()}
 const closeMenus=()=>document.querySelectorAll('.dmenu').forEach(m=>m.remove());
 document.addEventListener('click',e=>{
@@ -511,7 +535,7 @@ document.addEventListener('click',e=>{
     if(k==='edit')a.querySelector('.edit')?.click();else if(k==='del')a.querySelector('.del')?.click();else if(k==='rep')a.querySelector('.act[data-a="more"]')?.click()}
 });
 
-/* ---------- 5) SEARCH: people list with Follow / Following buttons ---------- */
+/* ---------- 5) SEARCH follow / following ---------- */
 async function loadFollows(){const r=await sb.from('follows').select('following_id').eq('follower_id',me.id);follows=new Set((r.data||[]).map(x=>x.following_id))}
 const fbtn=id=>'<button type="button" class="sfb'+(follows.has(id)?' on':'')+'" data-id="'+id+'">'+(follows.has(id)?'Following ✓':'Follow')+'</button>';
 let st2,busy=false;
@@ -542,39 +566,50 @@ function searchObs(){
     b.classList.toggle('on',!on);b.textContent=on?'Follow':'Following ✓'});
 }
 
-/* ---------- 6) SCHOOL / YEAR / DEGREE: edit-profile fields + forced prompt ---------- */
-function eduFields(p){return '<label>School<input id="'+p+'School" autocomplete="off" maxlength="80" placeholder="School peyar type pannunga…"></label><div class="sug" id="'+p+'Sug"></div><label>School year (padicha / mudicha year)<select id="'+p+'Year"><option value="">Year</option>'+YEARS+'</select></label><label>Degree<select id="'+p+'Deg"><option value="">Degree</option>'+DEG.map(d=>'<option>'+esc(d)+'</option>').join('')+'</select></label>'}
-function wireEdu(p,init){
-  const inp=$(p+'School'),sug=$(p+'Sug');let t;
-  if(init){inp.value=init.school||'';$(p+'Year').value=init.year||'';$(p+'Deg').value=init.degree||''}
+/* ---------- 6) SCHOOL / DEGREE / COLLEGE fields ---------- */
+function eduFields(p){return '<label>School<input id="'+p+'School" autocomplete="off" maxlength="80" placeholder="School peyar type pannunga…"></label><div class="sug" id="'+p+'Sug"></div>'
+ +'<label>School year (padicha / mudicha year)<select id="'+p+'Year"><option value="">Year</option>'+YEARS+'</select></label>'
+ +'<label>Degree / Qualification<select id="'+p+'Deg"><option value="">Select</option>'+DEG.map(d=>'<option>'+esc(d)+'</option>').join('')+'</select></label>'
+ +'<div class="colbox hidden" id="'+p+'Col"><label>College<input id="'+p+'College" autocomplete="off" maxlength="100" placeholder="College peyar type pannunga…"></label><div class="sug" id="'+p+'CSug"></div><label>College year (mudicha year)<select id="'+p+'CYear"><option value="">Year</option>'+YEARS+'</select></label></div>'
+ +'<label class="chk hidden" id="'+p+'Lvl"><input type="checkbox" id="'+p+'Show"><span>10th / 12th-ai peyar keezha kaattanum</span></label>'}
+function wireSug(inp,sug,table){
+  let t;
   inp.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(async()=>{
     const q=inp.value.trim().replace(/[%_,()\\]/g,' ').trim();if(q.length<2){sug.innerHTML='';return}
-    const r=await sb.from('yau_schools').select('id,name').ilike('name','%'+q+'%').limit(6),rows=r.data||[],ex=rows.some(x=>x.name.toLowerCase()===q.toLowerCase());
-    sug.innerHTML=rows.map(x=>'<button type="button" class="sg" data-n="'+esc(x.name)+'">🏫 '+esc(x.name)+'</button>').join('')+(ex?'':'<button type="button" class="sg new" data-n="'+esc(q)+'">➕ "'+esc(q)+'" pudhusa serkkanum</button>')},250)});
+    const r=await sb.from(table).select('id,name').ilike('name','%'+q+'%').limit(6),rows=r.data||[],ex=rows.some(x=>x.name.toLowerCase()===q.toLowerCase());
+    sug.innerHTML=rows.map(x=>'<button type="button" class="sg" data-n="'+esc(x.name)+'">'+(table==='yau_schools'?'🏫 ':'🏛️ ')+esc(x.name)+'</button>').join('')+(ex?'':'<button type="button" class="sg new" data-n="'+esc(q)+'">➕ "'+esc(q)+'" pudhusa serkkanum</button>')},250)});
   sug.addEventListener('click',e=>{const b=e.target.closest('.sg');if(!b)return;inp.value=b.dataset.n;sug.innerHTML=''});
 }
+function toggleEdu(p){const d=$(p+'Deg').value,col=COLLEGE.has(d);$(p+'Col').classList.toggle('hidden',!col);$(p+'Lvl').classList.toggle('hidden',!LVL[d])}
+function wireEdu(p,init){
+  wireSug($(p+'School'),$(p+'Sug'),'yau_schools');wireSug($(p+'College'),$(p+'CSug'),'yau_colleges');
+  if(init){$(p+'School').value=init.school||'';$(p+'Year').value=init.year||'';$(p+'Deg').value=init.degree||'';$(p+'College').value=init.college||'';$(p+'CYear').value=init.cyear||'';$(p+'Show').checked=!!init.showLevel}
+  $(p+'Deg').addEventListener('change',()=>toggleEdu(p));toggleEdu(p);
+}
 async function saveEdu(p,msg){
-  const s=$(p+'School').value.trim(),y=+$(p+'Year').value,d=$(p+'Deg').value;
+  const s=$(p+'School').value.trim(),y=+$(p+'Year').value,d=$(p+'Deg').value,col=COLLEGE.has(d),c=$(p+'College').value.trim(),cy=+$(p+'CYear').value;
   if(s.length<3||!y||!d){msg.textContent='School, Year, Degree moonum venum.';return false}
-  const r=await sb.rpc('set_my_education',{p_school:s,p_year:y,p_degree:d});
+  if(col&&(c.length<3||!cy)){msg.textContent='College peyar & college year venum.';return false}
+  const r=await sb.rpc('set_my_education_v2',{p_school:s,p_year:y,p_degree:d,p_college:col?c:null,p_college_year:col?cy:null,p_show_level:!!(LVL[d]&&$(p+'Show').checked)});
   if(r.error){msg.textContent=r.error.message.replace('EDU_INVALID: ','');return false}
-  edu[me.id]={school:r.data||s,year:y,degree:d};paintEdu();return true}
+  const o=r.data||{};edu[me.id]={school:o.school||s,year:y,degree:d,college:col?(o.college||c):'',cyear:col?cy:null,showLevel:!!(LVL[d]&&$(p+'Show').checked)};paintEdu();return true}
 function profileEdu(){
   const box=$('profilePanel')?.querySelector('.fields'),sv=$('saveProfile');if(!box||!sv||$('pfSchool'))return;
   const g=document.createElement('div');g.className='eg';
-  g.innerHTML='<b>🎓 School &amp; Degree</b>'+eduFields('pf')+'<button type="button" class="btn secondary" id="saveEdu">Save education</button><p class="status" id="eduMsg"></p>';
+  g.innerHTML='<b>🎓 School, Degree &amp; College</b>'+eduFields('pf')+'<button type="button" class="btn secondary" id="saveEdu">Save education</button><p class="status" id="eduMsg"></p>';
   sv.insertAdjacentElement('beforebegin',g);wireEdu('pf',edu[me.id]);
   $('saveEdu').onclick=async()=>{const b=$('saveEdu');b.disabled=true;$('eduMsg').textContent='';const ok=await saveEdu('pf',$('eduMsg'));b.disabled=false;if(ok)$('eduMsg').textContent='Saved ✓'}}
+const needEdu=e=>!e||!e.school||!e.year||!e.degree||(COLLEGE.has(e.degree)&&(!e.college||!e.cyear));
 function eduOverlay(){
   if($('eOv'))return;const a=$('app');if(a)a.inert=true;
   const o=document.createElement('div');o.id='eOv';
-  o.innerHTML='<div id="eBox" role="dialog" aria-modal="true"><h2>Profile complete pannunga 🎓</h2><p>School, year, degree venum. Illaama continue panna mudiyaadhu. (Degree neenga sollurathu thaan, verify panna maattom.)</p>'+eduFields('ov')+'<p class="status" id="ovMsg" style="color:#C8312B;font-weight:700"></p><button class="btn" id="ovSave">Save &amp; Continue</button><button class="btn secondary" id="ovOut">Log out</button></div>';
+  o.innerHTML='<div id="eBox" role="dialog" aria-modal="true"><h2>Profile complete pannunga 🎓</h2><p>School, year, degree (college irundha college-um) venum. Illaama continue panna mudiyaadhu. Degree neenga sollurathu thaan, verify panna maattom.</p>'+eduFields('ov')+'<p class="status" id="ovMsg" style="color:#C8312B;font-weight:700"></p><button class="btn" id="ovSave">Save &amp; Continue</button><button class="btn secondary" id="ovOut">Log out</button></div>';
   document.body.appendChild(o);wireEdu('ov',edu[me.id]);
-  $('ovSave').onclick=async()=>{const b=$('ovSave');b.disabled=true;const ok=await saveEdu('ov',$('ovMsg'));b.disabled=false;if(ok){o.remove();if(a)a.inert=false;const pf=$('pfSchool');if(pf){pf.value=edu[me.id].school;$('pfYear').value=edu[me.id].year;$('pfDeg').value=edu[me.id].degree}}};
+  $('ovSave').onclick=async()=>{const b=$('ovSave');b.disabled=true;const ok=await saveEdu('ov',$('ovMsg'));b.disabled=false;if(ok){o.remove();if(a)a.inert=false;const e=edu[me.id];if($('pfSchool')){$('pfSchool').value=e.school;$('pfYear').value=e.year;$('pfDeg').value=e.degree;$('pfCollege').value=e.college||'';$('pfCYear').value=e.cyear||'';toggleEdu('pf')}}};
   $('ovOut').onclick=()=>{o.remove();if(a)a.inert=false;$('logout').click()};
 }
 function maybeOverlay(){
-  setTimeout(()=>{const t=setInterval(()=>{if($('gOv'))return;clearInterval(t);if(eduErr)return;const e=edu[me.id];if(e&&e.school&&e.year&&e.degree)return;eduOverlay()},1000)},2500)}
+  setTimeout(()=>{const t=setInterval(()=>{if($('gOv'))return;clearInterval(t);if(eduErr)return;if(needEdu(edu[me.id]))eduOverlay()},1000)},2500)}
 
 /* ---------- boot ---------- */
 async function boot(){

@@ -288,4 +288,45 @@ async function run(){const sb=window.__sb,a=document.getElementById('app');if(!s
  catch(err){console.warn('sign',err)}finally{busy=false;if(document.querySelector(SEL.split(',').map(s=>s+':not([data-sg])').join(',')))schedule()}}
 new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['src','class']});
 })();
-</script></body></html>
+</script><!-- ===== PHASE 5 PATCH: limit messages (Tamil) + "இன்று மீதம்" counter =====
+HOW TO ADD: open dashboard.html, find the LAST line "</body></html>"
+and paste this whole <script> block just BEFORE </body>. Nothing else to change.
+Needs phase5_limits.sql to be run first. -->
+<script>
+(()=>{
+const $=i=>document.getElementById(i);
+let tt;
+function toast(m){const t=$('toast');if(!t)return;t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),5000)}
+function tr(s){const m=/LIMIT_(POSTS|LIKES):(\d+)/.exec(String(s||''));if(!m)return null;
+  return m[1]==='POSTS'
+   ?'📮 இன்னைக்கு '+m[2]+' posts முடிஞ்சுது. நாளைக்கு (12 AM) வாங்க!'
+   :'❤️ இன்னைக்கு '+m[2]+' likes முடிஞ்சுது. நாளைக்கு (12 AM) வாங்க!'}
+
+/* 1) Existing alert() calls (likes etc.) -> friendly Tamil toast */
+const _alert=window.alert;
+window.alert=function(t){const m=tr(t);if(m){toast(m);refresh()}else _alert.call(window,t)};
+
+/* 2) Post box status text ("LIMIT_POSTS:5") -> Tamil */
+const st=$('status');
+if(st)new MutationObserver(()=>{const m=tr(st.textContent);if(m&&st.textContent!==m){st.textContent=m;refresh()}}).observe(st,{childList:true,characterData:true,subtree:true});
+
+/* 3) Usage line under the composer */
+let line;
+function ensureLine(){if(line||!st)return;line=document.createElement('p');line.id='usageLine';line.className='small';line.style.margin='4px 0 0';st.insertAdjacentElement('afterend',line)}
+async function refresh(){try{const sb=window.__sb;if(!sb)return;ensureLine();
+  const r=await sb.rpc('get_my_usage');if(r.error||!r.data)return;
+  const u=Array.isArray(r.data)?r.data[0]:r.data;if(!u)return;
+  const pl=u.posts_limit-u.posts_used,ll=u.likes_limit-u.likes_used;
+  line.textContent='இன்று மீதம்: 📮 '+Math.max(pl,0)+'/'+u.posts_limit+' posts · ❤️ '+Math.max(ll,0)+'/'+u.likes_limit+' likes';
+ }catch(_){}}
+
+/* refresh after posting / liking */
+document.addEventListener('click',e=>{
+  if(e.target.closest('#createPost')||e.target.closest('.act[data-a="like"]'))setTimeout(refresh,1200)
+},true);
+
+/* first load: wait until dashboard is visible */
+const w=setInterval(()=>{const a=$('app');if(!window.__sb||!a||a.classList.contains('hidden'))return;clearInterval(w);refresh()},400);
+})();
+</script>
+</body></html>
